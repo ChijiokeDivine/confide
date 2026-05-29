@@ -266,29 +266,7 @@ function NewFormInner() {
                     View all →
                   </Link>
                 </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                  {SURVEY_TEMPLATES.slice(0, 4).map(template => (
-                    <Link key={template.id} href={`/templates?t=${template.id}`}
-                      className="group p-4 rounded-xl border border-neutral-200 hover:border-neutral-300 hover:bg-neutral-50 transition-all">
-                      <div className="flex items-start justify-between gap-2 mb-2">
-                        <span className={`text-xs px-2 py-1 rounded-full font-medium ${template.categoryColor}`}
-                          style={{ fontFamily: "'DM Sans', sans-serif" }}>
-                          {template.category}
-                        </span>
-                        <span className="text-xs text-neutral-400 group-hover:text-neutral-600"
-                          style={{ fontFamily: "'DM Sans', sans-serif" }}>
-                          {template.estimatedTime}
-                        </span>
-                      </div>
-                      <h4 className="text-sm font-medium text-neutral-900 mb-1" style={{ fontFamily: "'DM Sans', sans-serif" }}>
-                        {template.title}
-                      </h4>
-                      <p className="text-xs text-neutral-500 line-clamp-2" style={{ fontFamily: "'DM Sans', sans-serif" }}>
-                        {template.description}
-                      </p>
-                    </Link>
-                  ))}
-                </div>
+             
               </div>
             )}
 
