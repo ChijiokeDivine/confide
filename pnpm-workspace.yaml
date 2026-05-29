@@ -1,0 +1,9 @@
+allowBuilds:
+  esbuild: false
+  node-datachannel: false
+  sharp: false
+  unrs-resolver: false
+blockExoticSubdeps: false
+ignoredBuiltDependencies:
+  - sharp
+  - unrs-resolver
