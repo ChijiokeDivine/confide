@@ -149,7 +149,7 @@ export default function DashboardPage() {
                 key={s.label} 
                 className={`rounded-2xl border border-neutral-100 bg-neutral-50 p-5 md:p-6 ${index === 2 ? "col-span-2 md:col-span-1" : ""}`}
               >
-                <p className="text-xs text-neutral-400 uppercase tracking-[0.14em] mb-3" style={{ fontFamily: "'DM Sans', sans-serif" }}>{s.label}</p>
+                <p className="md:text-xs text-[9px] text-neutral-400 uppercase tracking-[0.14em] mb-3" style={{ fontFamily: "'DM Sans', sans-serif" }}>{s.label}</p>
                 <p className="text-2xl md:text-3xl font-semibold text-neutral-900" style={{ fontFamily: "'DM Sans', sans-serif" }}>{s.value}</p>
               </div>
             ))

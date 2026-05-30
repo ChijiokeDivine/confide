@@ -228,6 +228,151 @@ export const SURVEY_TEMPLATES: SurveyTemplate[] = [
       q("textarea", "What would need to be true for you to switch from your current solution?", false),
     ],
   },
+  {
+    id: "dao_governance_feedback",
+    title: "DAO Governance Feedback Survey",
+    description:
+      "Collect feedback from token holders and community members on DAO governance processes, proposal quality, and voting experience.",
+    category: "Web3 & DAOs",
+    categoryColor: "bg-indigo-50 text-indigo-700",
+    useCase: "Quarterly DAO community check-in",
+    estimatedTime: "8–12 min",
+    questions: [
+      q("scale", "How satisfied are you with the current governance process?", true, { min: 1, max: 10 }),
+      q("radio", "How often do you vote on DAO proposals?", true, {
+        options: ["Every proposal", "Most proposals", "Occasionally", "Rarely", "Never"],
+      }),
+      q("checkbox", "What factors prevent you from voting more often?", false, {
+        options: ["Gas fees are too high", "Proposal information is unclear", "Don't have enough time", "Feel my vote doesn't matter", "Technical barriers", "Other"],
+      }),
+      q("scale", "How would you rate the quality of proposal documentation?", true, { min: 1, max: 10 }),
+      q("radio", "Do you believe the DAO's decision-making is transparent?", true, {
+        options: ["Very transparent", "Mostly transparent", "Neutral", "Somewhat opaque", "Very opaque"],
+      }),
+      q("scale", "How well do you think the DAO balances speed and decentralization?", true, { min: 1, max: 10 }),
+      q("textarea", "What one change would most improve your participation in DAO governance?", false),
+    ],
+  },
+  {
+    id: "protocol_parameter_change",
+    title: "Protocol Parameter Change Survey",
+    description:
+      "Gather community sentiment on proposed changes to protocol parameters (fees, incentives, collateral ratios, etc.) before an on-chain vote.",
+    category: "Web3 & DAOs",
+    categoryColor: "bg-indigo-50 text-indigo-700",
+    useCase: "Pre-vote sentiment analysis",
+    estimatedTime: "5–8 min",
+    questions: [
+      q("radio", "What is your current stance on this parameter change?", true, {
+        options: ["Strongly support", "Support", "Neutral", "Oppose", "Strongly oppose"],
+      }),
+      q("scale", "How well do you understand the implications of this change?", true, { min: 1, max: 10 }),
+      q("checkbox", "Which of these concerns are most important to you?", false, {
+        options: ["Impact on protocol security", "Effect on user experience", "Financial impact on stakeholders", "Effect on protocol sustainability", "Alignment with protocol mission", "Other"],
+      }),
+      q("radio", "Do you think this change has been sufficiently discussed in the community?", true, {
+        options: ["Yes, plenty of discussion", "Yes, but could be more", "Neutral", "No, needs more discussion", "No, very little discussion"],
+      }),
+      q("textarea", "Please share any additional thoughts or concerns about this proposal.", false),
+    ],
+  },
+  {
+    id: "community_treasury_allocation",
+    title: "Community Treasury Allocation Survey",
+    description:
+      "Gather preferences on how to allocate DAO treasury funds across different initiatives (development, marketing, grants, etc.).",
+    category: "Web3 & DAOs",
+    categoryColor: "bg-indigo-50 text-indigo-700",
+    useCase: "Treasury budgeting cycle",
+    estimatedTime: "7–10 min",
+    questions: [
+      q("checkbox", "Which areas should be top priorities for treasury spending?", true, {
+        options: ["Protocol development & security", "Marketing & user acquisition", "Community grants program", "Liquidity provision", "Research & development", "Legal & compliance", "Operations & admin", "Other"],
+      }),
+      q("scale", "How satisfied are you with the current treasury management transparency?", true, { min: 1, max: 10 }),
+      q("radio", "What is your preferred approach to grant funding?", true, {
+        options: ["Large grants to few projects", "Small grants to many projects", "Equally split between large and small", "Milestone-based funding only", "Other"],
+      }),
+      q("radio", "How often should treasury allocations be reviewed?", true, {
+        options: ["Monthly", "Quarterly", "Bi-annually", "Annually", "As needed"],
+      }),
+      q("textarea", "What specific initiatives would you like to see funded in the next cycle?", false),
+    ],
+  },
+  {
+    id: "contributor_feedback",
+    title: "DAO Contributor Feedback Survey",
+    description:
+      "Collect feedback from active DAO contributors on their experience, compensation, collaboration tools, and overall satisfaction.",
+    category: "Web3 & DAOs",
+    categoryColor: "bg-indigo-50 text-indigo-700",
+    useCase: "Bi-annual contributor experience check",
+    estimatedTime: "10–15 min",
+    questions: [
+      q("scale", "How satisfied are you with your overall experience as a contributor?", true, { min: 1, max: 10 }),
+      q("radio", "How would you rate the clarity of your role and responsibilities?", true, {
+        options: ["Very clear", "Mostly clear", "Neutral", "Somewhat unclear", "Very unclear"],
+      }),
+      q("radio", "How fair do you feel your compensation is compared to your contributions?", true, {
+        options: ["Very fair", "Fair", "Neutral", "Unfair", "Very unfair"],
+      }),
+      q("checkbox", "Which tools do you find most helpful for collaboration?", false, {
+        options: ["Discord", "Telegram", "Notion", "GitHub", "Snapshot", "Discourse", "Other"],
+      }),
+      q("scale", "How would you rate the onboarding process for new contributors?", true, { min: 1, max: 10 }),
+      q("textarea", "What changes would most improve your experience as a contributor?", true),
+      q("radio", "Would you recommend contributing to this DAO to others?", true, {
+        options: ["Yes, enthusiastically", "Yes, with reservations", "Neutral", "Probably not", "No"],
+      }),
+    ],
+  },
+  {
+    id: "defi_protocol_ux",
+    title: "DeFi Protocol User Experience Survey",
+    description:
+      "Gather feedback from DeFi protocol users on usability, transaction experience, documentation, and feature requests.",
+    category: "Web3 & DAOs",
+    categoryColor: "bg-indigo-50 text-indigo-700",
+    useCase: "Post-launch or quarterly UX research",
+    estimatedTime: "8–12 min",
+    questions: [
+      q("scale", "How would you rate the overall user experience of our protocol?", true, { min: 1, max: 10 }),
+      q("radio", "How easy was it to complete your first transaction?", true, {
+        options: ["Very easy", "Easy", "Neutral", "Difficult", "Very difficult"],
+      }),
+      q("checkbox", "Which pain points have you experienced?", false, {
+        options: ["High gas fees", "Slow transaction times", "Confusing UI", "Unclear documentation", "Security concerns", "Price impact/slippage issues", "Other"],
+      }),
+      q("scale", "How would you rate the quality of our documentation?", true, { min: 1, max: 10 }),
+      q("radio", "Which wallet do you primarily use with our protocol?", true, {
+        options: ["MetaMask", "WalletConnect", "Ledger", "Coinbase Wallet", "Rainbow", "Other"],
+      }),
+      q("textarea", "What feature would you most like to see added next?", false),
+      q("scale", "How likely are you to recommend our protocol to others?", true, { min: 1, max: 10 }),
+    ],
+  },
+  {
+    id: "nft_collection_feedback",
+    title: "NFT Collection Holder Feedback Survey",
+    description:
+      "Collect feedback from NFT holders on collection benefits, community experience, roadmap, and future plans.",
+    category: "Web3 & DAOs",
+    categoryColor: "bg-indigo-50 text-indigo-700",
+    useCase: "Holder community engagement",
+    estimatedTime: "6–10 min",
+    questions: [
+      q("scale", "How satisfied are you with being a holder of this collection?", true, { min: 1, max: 10 }),
+      q("radio", "Which holder benefits do you value most?", true, {
+        options: ["Exclusive content", "Early access to drops", "Governance rights", "Revenue sharing", "Merch discounts", "Community events", "Other"],
+      }),
+      q("scale", "How would you rate the community engagement?", true, { min: 1, max: 10 }),
+      q("radio", "Do you feel the project team communicates effectively?", true, {
+        options: ["Very effectively", "Effectively", "Neutral", "Ineffectively", "Very ineffectively"],
+      }),
+      q("scale", "How confident are you in the project's roadmap?", true, { min: 1, max: 10 }),
+      q("textarea", "What would make you more excited about holding this NFT long-term?", false),
+    ],
+  },
 ];
 
 export function getTemplateById(id: string): SurveyTemplate | undefined {
@@ -242,4 +387,5 @@ export const TEMPLATE_CATEGORIES = [
   "Healthcare & Research",
   "Governance",
   "Research & Intelligence",
+  "Web3 & DAOs",
 ];
