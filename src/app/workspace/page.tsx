@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { supabaseBrowser } from "@/lib/supabase-client";
 import Sidebar from "@/components/Sidebar";
 
@@ -13,21 +13,22 @@ type FormSummary = {
   created_at: string;
   response_count: number;
   questions: unknown[];
+  whitelist_enabled?: boolean;
+  whitelist_total?: number;
+  whitelist_used?: number;
 };
 
-export default function DashboardPage() {
+export default function WorkspacePage() {
   const [forms, setForms] = useState<FormSummary[]>([]);
   const [loading, setLoading] = useState(true);
-  const [email, setEmail] = useState("");
   const [copyNotificationVisible, setCopyNotificationVisible] = useState(false);
   const [togglingFormId, setTogglingFormId] = useState<string | null>(null);
-  const [visibleCount, setVisibleCount] = useState(3);
+  const [visibleCount, setVisibleCount] = useState(5);
   const [openDropdownId, setOpenDropdownId] = useState<string | null>(null);
   const [mobileModalFormId, setMobileModalFormId] = useState<string | null>(null);
 
   useEffect(() => {
     fetchForms();
-    fetchUser();
   }, []);
 
   useEffect(() => {
@@ -64,12 +65,6 @@ export default function DashboardPage() {
     };
   }, []);
 
-  async function fetchUser() {
-    const sb = supabaseBrowser();
-    const { data } = await sb.auth.getUser();
-    setEmail(data.user?.email ?? "");
-  }
-
   async function fetchForms() {
     try {
       const res = await fetch("/api/forms");
@@ -97,8 +92,6 @@ export default function DashboardPage() {
     setVisibleCount(prev => prev + 3);
   }
 
-  const totalResponses = forms.reduce((s, f) => s + f.response_count, 0);
-  const activeForms = forms.filter((f) => f.is_active).length;
   const visibleForms = forms.slice(0, visibleCount);
   const hasMore = visibleCount < forms.length;
 
@@ -108,38 +101,21 @@ export default function DashboardPage() {
         {/* Page header */}
         <div className="anim-in d1 mb-8 md:mb-10 flex flex-row items-center justify-between gap-4">
           <div>
-            <p className="text-xs uppercase tracking-[0.18em] text-neutral-400 mb-2" style={{ fontFamily: "'DM Sans', sans-serif" }}>Creator Dashboard</p>
+            <p className="text-xs uppercase tracking-[0.18em] text-neutral-400 mb-2" style={{ fontFamily: "'DM Sans', sans-serif" }}>Workspace</p>
             <h1 className="text-2xl md:text-3xl font-semibold tracking-tight text-neutral-900" style={{ fontFamily: "'DM Sans', sans-serif" }}>
-              Your surveys
+              All your surveys
             </h1>
           </div>
           <Link href="/forms/new"
             className="flex items-center rounded-full bg-neutral-900 px-4 md:px-5 py-2 text-sm font-medium text-white hover:bg-neutral-800 transition-colors active:scale-[0.98]"
             style={{ fontFamily: "'DM Sans', sans-serif" }}>
             <svg className="mr-2" width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M7 1v12M1 7h12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/></svg>
-            New <span className="hidden md:inline ml-1">survey</span>
+            New survey
           </Link>
         </div>
 
-        {/* Stats row */}
-        <div className="anim-in d2 grid grid-cols-2 md:grid-cols-3 gap-3 md:gap-4 mb-8 md:mb-10">
-          {[
-            { label: "Total surveys", value: forms.length },
-            { label: "Active surveys", value: activeForms },
-            { label: "Encrypted responses", value: totalResponses },
-          ].map((s, index) => (
-            <div 
-              key={s.label} 
-              className={`rounded-2xl border border-neutral-100 bg-neutral-50 p-5 md:p-6 ${index === 2 ? "col-span-2 md:col-span-1" : ""}`}
-            >
-              <p className="text-xs text-neutral-400 uppercase tracking-[0.14em] mb-3" style={{ fontFamily: "'DM Sans', sans-serif" }}>{s.label}</p>
-              <p className="text-2xl md:text-3xl font-semibold text-neutral-900" style={{ fontFamily: "'DM Sans', sans-serif" }}>{s.value}</p>
-            </div>
-          ))}
-        </div>
-
         {/* Forms list */}
-        <div className="anim-in d3">
+        <div className="anim-in d2">
           {loading ? (
             <div className="flex items-center justify-center py-20 text-neutral-400" style={{ fontFamily: "'DM Sans', sans-serif" }}>
               Loading…
@@ -173,18 +149,53 @@ export default function DashboardPage() {
                   ></div>
                   
                   <div className="min-w-0 flex-1 mb-3 md:mb-0 relative z-10">
-                    <div className="flex items-center gap-2 md:gap-3 mb-1">
+                    <div className="flex items-center gap-2 md:gap-3 mb-2">
                       <h3 className="font-medium text-neutral-900 truncate" style={{ fontFamily: "'DM Sans', sans-serif" }}>{form.title}</h3>
                       <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-[10px] md:text-xs font-medium ${form.is_active ? "bg-green-50 text-green-700" : "bg-neutral-100 text-neutral-500"}`}
                         style={{ fontFamily: "'DM Sans', sans-serif" }}>
                         {form.is_active ? "Active" : "Closed"}
                       </span>
+                      {form.whitelist_enabled && (
+                        <span className="inline-flex items-center rounded-full bg-blue-50 text-blue-700 px-2 py-0.5 text-[10px] md:text-xs font-medium" style={{ fontFamily: "'DM Sans', sans-serif" }}>
+                          Whitelist
+                        </span>
+                      )}
                     </div>
-                    <p className="text-sm text-neutral-400" style={{ fontFamily: "'DM Sans', sans-serif" }}>
-                      {form.questions.length} question{form.questions.length !== 1 ? "s" : ""} · {form.response_count} response{form.response_count !== 1 ? "s" : ""}
-                    </p>
+                    {form.description && (
+                      <p className="text-sm text-neutral-500 mb-3 line-clamp-2" style={{ fontFamily: "'DM Sans', sans-serif" }}>
+                        {form.description}
+                      </p>
+                    )}
+                    <div className="flex flex-wrap items-center gap-3">
+                      <div className="flex items-center gap-1.5 text-xs text-neutral-500" style={{ fontFamily: "'DM Sans', sans-serif" }}>
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" className="text-neutral-400">
+                          <path d="M9 11H7V9H9V11Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                          <path d="M15 11H13V9H15V11Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                          <path d="M9 15H7V13H9V15Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                          <path d="M15 15H13V13H15V15Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                          <path d="M22 12C22 17.5228 17.5228 22 12 22C6.47715 22 2 17.5228 2 12C2 6.47715 6.47715 2 12 2C17.5228 2 22 6.47715 22 12Z" stroke="currentColor" strokeWidth="2"/>
+                        </svg>
+                        {form.questions.length} question{form.questions.length !== 1 ? "s" : ""}
+                      </div>
+                      <div className="flex items-center gap-1.5 text-xs text-neutral-500" style={{ fontFamily: "'DM Sans', sans-serif" }}>
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" className="text-neutral-400">
+                          <path d="M9 12L11 14L15 10" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                          <path d="M7 3H17C18.1046 3 19 3.89543 19 5V19C19 20.1046 18.1046 21 17 21H7C5.89543 21 5 20.1046 5 19V5C5 3.89543 5.89543 3 7 3Z" stroke="currentColor" strokeWidth="2"/>
+                        </svg>
+                        {form.response_count} response{form.response_count !== 1 ? "s" : ""}
+                      </div>
+                      {form.whitelist_enabled && (
+                        <div className="flex items-center gap-1.5 text-xs text-blue-600" style={{ fontFamily: "'DM Sans', sans-serif" }}>
+                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" className="text-blue-500">
+                            <path d="M12 15V17" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+                            <path d="M12 21C7.02944 21 3 16.9706 3 12C3 7.02944 7.02944 3 12 3C16.9706 3 21 7.02944 21 12C21 13.8486 20.4398 15.5515 19.4945 16.9384C18.5492 18.3252 17.2838 19.3326 15.8458 19.8294C14.4078 20.3262 12.8572 20.2796 11.4608 19.7047C10.0644 19.1298 8.89554 18.0616 8.11061 16.6918" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+                          </svg>
+                          {form.whitelist_used || 0}/{form.whitelist_total || 0} used
+                        </div>
+                      )}
+                    </div>
                   </div>
-                  <div className="relative flex-shrink-0  hidden md:block">
+                  <div className="relative flex-shrink-0 hidden md:block">
                     <button
                       data-dropdown-button
                       onClick={(e) => {
@@ -273,19 +284,6 @@ export default function DashboardPage() {
               )}
             </div>
           )}
-        </div>
-
-        {/* Privacy callout */}
-        <div className="anim-in d4 mt-10 md:mt-12 rounded-2xl border border-neutral-100 bg-neutral-50 px-4 md:px-6 py-4 md:py-5 flex items-start gap-3 md:gap-4">
-          <div className="mt-0.5 flex-shrink-0 w-8 h-8 rounded-full bg-neutral-900 flex items-center justify-center">
-            <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M7 1L1.5 3.5v4C1.5 10.5 4 12.5 7 13c3-0.5 5.5-2.5 5.5-5.5v-4L7 1z" stroke="white" strokeWidth="1.2" strokeLinejoin="round"/></svg>
-          </div>
-          <div>
-            <p className="text-sm font-medium text-neutral-900 mb-0.5" style={{ fontFamily: "'DM Sans', sans-serif" }}>End-to-end encrypted</p>
-            <p className="md:text-sm text-xs text-neutral-500" style={{ fontFamily: "'DM Sans', sans-serif" }}>
-              Every response is encrypted via CDR before leaving the respondent's browser. Only your wallet can decrypt the results.
-            </p>
-          </div>
         </div>
 
         {/* Copy notification */}

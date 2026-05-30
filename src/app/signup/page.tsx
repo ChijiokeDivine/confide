@@ -91,21 +91,21 @@ export default function SignupPage() {
             <div className="anim-form-field">
               <label htmlFor="name" className="block text-sm font-medium text-neutral-700 mb-2" style={{ fontFamily: "'DM Sans', sans-serif" }}>Name</label>
               <input id="name" name="name" type="text"
-                className="w-full px-4 py-3 rounded-xl border border-neutral-200 transition-all focus:outline-none focus:ring-1 focus:ring-neutral-300"
+                className="w-full px-4 py-3 rounded-xl border border-neutral-200 transition-all focus:outline-none focus:ring-1 focus:ring-neutral-300 md:text-md text-sm"
                 placeholder="John Doe" required />
             </div>
 
             <div className="anim-form-field">
               <label htmlFor="email" className="block text-sm font-medium text-neutral-700 mb-2" style={{ fontFamily: "'DM Sans', sans-serif" }}>Email</label>
               <input id="email" name="email" type="email"
-                className="w-full px-4 py-3 rounded-xl border border-neutral-200 transition-all focus:outline-none focus:ring-1 focus:ring-neutral-300"
+                className="w-full px-4 py-3 rounded-xl border border-neutral-200 transition-all focus:outline-none focus:ring-1 focus:ring-neutral-300 md:text-md text-sm"
                 placeholder="you@example.com" required />
             </div>
 
             <div className="anim-form-field">
               <label htmlFor="password" className="block text-sm font-medium text-neutral-700 mb-2" style={{ fontFamily: "'DM Sans', sans-serif" }}>Password</label>
               <input id="password" name="password" type="password" minLength={8}
-                className="w-full px-4 py-3 rounded-xl border border-neutral-200 transition-all focus:outline-none focus:ring-1 focus:ring-neutral-300"
+                className="w-full px-4 py-3 rounded-xl border border-neutral-200 transition-all focus:outline-none focus:ring-1 focus:ring-neutral-300 md:text-md text-sm"
                 placeholder="••••••••" required />
             </div>
 

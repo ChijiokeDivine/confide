@@ -253,15 +253,15 @@ function NewFormInner() {
               <div className="anim-in mb-8 rounded-2xl border border-neutral-100 bg-white p-5 md:p-6 space-y-4">
                 <div className="flex items-start justify-between gap-3">
                   <div>
-                    <h3 className="text-base md:text-lg font-semibold text-neutral-900 mb-1" style={{ fontFamily: "'DM Sans', sans-serif" }}>
+                    <h3 className="text-sm md:text-md font-semibold text-neutral-900 mb-1" style={{ fontFamily: "'DM Sans', sans-serif" }}>
                       Start from a template
                     </h3>
-                    <p className="text-sm text-neutral-500" style={{ fontFamily: "'DM Sans', sans-serif" }}>
+                    <p className="text-xs md:text-sm text-neutral-500" style={{ fontFamily: "'DM Sans', sans-serif" }}>
                       Pick a pre-built survey and customise it.
                     </p>
                   </div>
                   <Link href="/templates"
-                    className="text-sm font-medium text-neutral-900 hover:text-neutral-600 transition-colors flex-shrink-0"
+                    className="text-xs md:text-sm font-medium text-neutral-900 hover:text-neutral-600 transition-colors flex-shrink-0"
                     style={{ fontFamily: "'DM Sans', sans-serif" }}>
                     View all →
                   </Link>

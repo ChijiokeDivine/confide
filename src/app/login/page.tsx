@@ -70,7 +70,7 @@ export default function LoginPage() {
                 Email
               </label>
               <input id="email" name="email" type="email"
-                className="w-full px-4 py-3 rounded-xl border border-neutral-200 bg-white text-neutral-900 transition-all focus:outline-none focus:ring-1 focus:ring-neutral-300 focus:border-neutral-300"
+                className="w-full px-4 py-3 rounded-xl border border-neutral-200 bg-white text-neutral-900 transition-all focus:outline-none focus:ring-1 focus:ring-neutral-300 focus:border-neutral-300 md:text-md text-sm"
                 placeholder="you@example.com" required />
             </div>
 
@@ -79,7 +79,7 @@ export default function LoginPage() {
                 Password
               </label>
               <input id="password" name="password" type="password"
-                className="w-full px-4 py-3 rounded-xl border border-neutral-200 bg-white text-neutral-900 transition-all focus:outline-none focus:ring-1 focus:ring-neutral-300 focus:border-neutral-300"
+                className="w-full px-4 py-3 rounded-xl border border-neutral-200 bg-white text-neutral-900 transition-all focus:outline-none focus:ring-1 focus:ring-neutral-300 focus:border-neutral-300 md:text-md text-sm"
                 placeholder="••••••••" required />
             </div>
 

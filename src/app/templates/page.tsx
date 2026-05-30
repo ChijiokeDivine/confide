@@ -49,7 +49,7 @@ export default function TemplatesPage() {
             Start from a template
           </h1>
           <p
-            className="text-neutral-500 max-w-xl"
+            className="text-neutral-500 max-w-xl text-xs md:text-base"
             style={{ fontFamily: "'DM Sans', sans-serif" }}
           >
             Professionally designed, privacy-first survey templates for the private sector. Pick one, customise, and publish — all responses are end-to-end encrypted.
@@ -62,7 +62,7 @@ export default function TemplatesPage() {
             <button
               key={cat}
               onClick={() => setActiveCategory(cat)}
-              className={`px-4 py-1.5 rounded-full text-sm font-medium transition-all border ${
+              className={`px-4 py-1.5 rounded-full text-xs md:text-sm font-medium transition-all border ${
                 activeCategory === cat
                   ? "bg-neutral-900 text-white border-neutral-900"
                   : "bg-white text-neutral-600 border-neutral-200 hover:border-neutral-400"
@@ -79,7 +79,7 @@ export default function TemplatesPage() {
           {filtered.map((template) => (
             <div
               key={template.id}
-              className="card-hover rounded-2xl border border-neutral-100 bg-white p-6 flex flex-col"
+              className="card-hover rounded-2xl border border-neutral-100 bg-white p-6 flex flex-col mb-4 md:mb-2"
             >
               {/* Category badge */}
               <span

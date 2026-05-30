@@ -131,7 +131,24 @@ export default function Sidebar({ children }: { children: React.ReactNode }) {
 
   const quickLinks = useMemo<SearchResultItem[]>(
     () => [
-
+      {
+        id: "dashboard",
+        title: "Dashboard",
+        subtitle: "View your survey overview and statistics.",
+        href: "/dashboard",
+        kind: "link",
+        badge: "Page",
+        searchText: "dashboard home overview statistics stats",
+      },
+      {
+        id: "workspace",
+        title: "Workspace",
+        subtitle: "See all your surveys in one place.",
+        href: "/workspace",
+        kind: "link",
+        badge: "Page",
+        searchText: "workspace all surveys forms list",
+      },
       {
         id: "new-form",
         title: "Create Survey",
@@ -141,7 +158,24 @@ export default function Sidebar({ children }: { children: React.ReactNode }) {
         badge: "Action",
         searchText: "create survey new form questionnaire build publish",
       },
-
+      {
+        id: "templates",
+        title: "Templates",
+        subtitle: "Browse pre-built survey templates.",
+        href: "/templates",
+        kind: "link",
+        badge: "Page",
+        searchText: "templates pre-built surveys examples",
+      },
+      {
+        id: "settings",
+        title: "Settings",
+        subtitle: "Manage your account and preferences.",
+        href: "/settings",
+        kind: "link",
+        badge: "Page",
+        searchText: "settings account preferences",
+      },
     ],
     []
   );
@@ -229,7 +263,7 @@ export default function Sidebar({ children }: { children: React.ReactNode }) {
           <path d="M16 3H5a2 2 0 0 0-2 2v11" stroke="currentColor" strokeWidth="2"/>
         </svg>
       ), 
-      href: "#" 
+      href: "/workspace" 
     },
     { 
       name: "How To Guides", 
@@ -284,20 +318,14 @@ export default function Sidebar({ children }: { children: React.ReactNode }) {
           {items.map((item) => {
             const content = (
               <>
-                <div className={`mt-0.5 flex h-10 w-10 items-center justify-center rounded-2xl border ${
-                  item.disabled
-                    ? "border-neutral-200 bg-neutral-100 text-neutral-400"
-                    : "border-neutral-200 bg-neutral-50 text-neutral-700"
-                }`}>
-                  {renderSearchResultIcon(item.kind)}
-                </div>
+                
                 <div className="min-w-0 flex-1">
                   <div className="mb-1 flex items-center gap-2">
                     <p className="truncate text-sm font-medium text-neutral-900" style={{ fontFamily: "'DM Sans', sans-serif" }}>
                       {item.title}
                     </p>
                     <span
-                      className={`inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-medium ${
+                      className={`inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-medium hidden md:block ${
                         item.disabled ? "bg-neutral-100 text-neutral-500" : "bg-neutral-100 text-neutral-600"
                       }`}
                       style={{ fontFamily: "'DM Sans', sans-serif" }}
@@ -305,7 +333,7 @@ export default function Sidebar({ children }: { children: React.ReactNode }) {
                       {item.badge}
                     </span>
                   </div>
-                  <p className="text-sm leading-relaxed text-neutral-500" style={{ fontFamily: "'DM Sans', sans-serif" }}>
+                  <p className="text-xs md:text-sm leading-relaxed text-neutral-500" style={{ fontFamily: "'DM Sans', sans-serif" }}>
                     {item.subtitle}
                   </p>
                   {item.meta && (
@@ -315,7 +343,7 @@ export default function Sidebar({ children }: { children: React.ReactNode }) {
                   )}
                 </div>
                 <div className="flex h-9 items-center">
-                  <span className="rounded-full border border-neutral-200 px-2.5 py-1 text-[10px] font-medium uppercase tracking-[0.14em] text-neutral-400" style={{ fontFamily: "'DM Sans', sans-serif" }}>
+                  <span className="rounded-full border border-neutral-200 px-2.5 py-1 text-[8px] md:text-[10px] font-medium uppercase tracking-[0.14em] text-neutral-400" style={{ fontFamily: "'DM Sans', sans-serif" }}>
                     {item.disabled ? "Soon" : "Open"}
                   </span>
                 </div>
@@ -513,9 +541,9 @@ export default function Sidebar({ children }: { children: React.ReactNode }) {
                     </h2>
                   </div>
                   <div className="flex items-center gap-2">
-                    <span className="hidden rounded-full border border-neutral-200 px-2.5 py-1 text-[11px] font-medium text-neutral-400 md:inline-flex" style={{ fontFamily: "'DM Sans', sans-serif" }}>
+                    {/* <span className="hidden rounded-full border border-neutral-200 px-2.5 py-1 text-[11px] font-medium text-neutral-400 md:inline-flex" style={{ fontFamily: "'DM Sans', sans-serif" }}>
                       {shortcutLabel}
-                    </span>
+                    </span> */}
                     <button
                       type="button"
                       onClick={closeSearch}
@@ -538,8 +566,8 @@ export default function Sidebar({ children }: { children: React.ReactNode }) {
                     type="text"
                     value={searchQuery}
                     onChange={(event) => setSearchQuery(event.target.value)}
-                    placeholder="Search settings, templates, help, and more..."
-                    className="w-full bg-transparent text-[15px] text-neutral-900 placeholder:text-neutral-400 focus:outline-none"
+                    placeholder="Search ..."
+                    className="w-full bg-transparent md:text-[15px] text-sm text-neutral-900 placeholder:text-neutral-400 focus:outline-none"
                     style={{ fontFamily: "'DM Sans', sans-serif" }}
                   />
                   {searchQuery && (
