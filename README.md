@@ -1,65 +1,192 @@
-# CDR Private Survey Tool
 
-A privacy-first survey platform where every response is encrypted via **Story Protocol's CDR (Confidential Data Registry)** before storage. Only the survey creator can decrypt and read responses.
-
----
-
-## Architecture
-
-```
-Respondent browser
-  → fills form at /forms/[formId]
-  → POST /api/respond  ← encrypts payload via CDR TEE global pubkey
-                       ← allocates per-response CDR vault
-                       ← writes ciphertext on-chain
-                       ← records vault UUID in Supabase
-
-Creator browser
-  → views /forms/[formId]/results
-  → GET /api/results?formId=xxx  ← fetches vault UUIDs from Supabase
-                                 ← calls cdrClient.consumer.accessCDR per vault
-                                 ← decrypts via platform wallet (creator's read condition)
-                                 ← aggregates + returns
-```
+# Confide: Privacy-First Survey Tool
 
 ---
 
-## Setup
+## The Problem
 
-### 1. Environment variables
+Let’s start with what’s broken today:
 
-Create `.env.local`:
+### Web2 Survey Problems
+Traditional survey tools (Google Forms, SurveyMonkey, Typeform, etc.) all work the same basic way:
+- You fill out a form → your raw answers hit their servers → they store it in a database (maybe encrypted, but they hold the keys) → they can read your answers whenever they want.
 
+Worse:
+- A breach exposes all responses at once.
+- You have to trust the company not to sell your data, use it for ads, or give it to governments.
+- You never really know who’s looking at what you wrote.
+
+### Web3 Survey Problems
+Most "web3 survey tools" don’t fix this—they just add wallet login to the same web2 stack:
+- Responses still live in a regular database.
+- You still have to trust the platform operator.
+- A lot of them overcomplicate things with tokens when all you want is privacy.
+
+### The Specific Pain Point That Drove Me
+I’ve run surveys where people held back honest answers because they were worried about who’d see them. For sensitive topics—workplace feedback, market research on unpopular opinions, personal health questions—you need a guarantee that only the person who made the survey can read what you write.
+
+---
+
+## Why I Built This
+
+I wanted something simple:
+- Familiar web2 UX (email login, easy form builder)
+- Web3-grade privacy (cryptographic guarantees, no middleman can read responses)
+- No friction for respondents (no wallet needed to fill out a form)
+- No rent-seeking (no token gate, no paywall, just privacy by default)
+
+Here’s how I thought about building it:
+- Start with something people already know how to use (a regular web app).
+- Hide the crypto stuff—most people don’t care how it works, just that it works.
+- Lean hard into on-chain primitives for privacy, not for hype.
+
+---
+
+## Features: Technical Breakdown (With Concerns &amp; Solutions)
+
+### Web2 Features (The Familiar Stuff)
+First, all the basics you’d expect from a modern survey tool:
+
+| Feature | How it works | Concern I addressed | Solution |
+|---------|--------------|---------------------|----------|
+| User authentication | Email/password login via Supabase Auth | People don’t want to remember another password, and account security matters | Use battle-tested Supabase Auth with secure session handling; later can add OAuth (Google, GitHub) if needed |
+| Form builder | Drag-and-drop? No (yet)—a clean, type-safe form UI for creators to build surveys with 8 question types | Building a good form UX is hard; also need to validate questions to avoid broken surveys | Keep it simple but powerful: text, textarea, email, radio, checkbox, scale, rating, slider, dropdown, phone, date, time, datetime. Validate on server that forms have at least one question. |
+| Survey sharing | Copy a public link and send it to anyone | Need to make sure public links are unguessable but shareable | Use UUIDs for form IDs (long, random, impossible to brute-force) |
+| Dashboard | Creator sees all their forms, response counts, active/closed toggle | Need to make sure only the right person can see the dashboard | Row Level Security (RLS) on Supabase: every query for forms/responses is scoped to the authenticated user |
+| Results dashboard | Charts, individual response view, summary stats | Results need to feel snappy, even when you have lots of responses | Split API into `countOnly` (cheap, no crypto) and full decrypt (pays gas per response); let you check count first before decrypting everything |
+
+---
+
+### Web3 Features (The Privacy Magic)
+Now the good stuff—this is what makes Confide different:
+
+#### 1. End-to-End Encrypted Responses via Story Protocol CDR
+**What it is**: Every response gets encrypted *before* it’s stored—using Story Protocol’s Confidential Data Registry (CDR). CDR uses Trusted Execution Environments (TEEs) to handle encryption/decryption securely.
+
+**Concern 1**: If I encrypt responses on the client, what happens if the user refreshes or loses their keys?
+**Solution**: Never encrypt on the client alone—always encrypt server-side via CDR, with a read condition tied to the creator’s wallet. That way, only the creator can decrypt.
+
+**Concern 2**: What if CDR goes down or changes their API?
+**Solution**: Abstract CDR behind a thin wrapper (`@/lib/cdr-server.ts`); if we ever need to swap it out, we only change one place. Also store only vault UUIDs in our DB, not ciphertext directly—keeps Supabase simple.
+
+#### 2. Wallet-Based Decryption (Creator Only)
+**What it is**: When you create a form, you get a wallet (generated server-side, encrypted at rest with AES-256-GCM). Only that wallet can decrypt responses.
+
+**Concern 1**: Wallet storage is hard—if we lose wallets, we lose access to all responses forever.
+**Solution**:
+- Use `WALLET_ENCRYPTION_KEY` env var to encrypt wallets before storing them in `creator_accounts` table.
+- Wallets are generated deterministically? No—unique per creator, never reused across forms.
+- Keep the encryption key *out* of git, *out* of the database, only in environment variables.
+
+**Concern 2**: What if the creator loses their account?
+**Solution**: Right now, recovery is via Supabase Auth (reset password). Later we can add seed phrase backup, but start simple.
+
+#### 3. Whitelisted Surveys (Optional)
+**What it is**: Creators can restrict surveys to a pre-approved list of respondents (e.g., only employees with a company email).
+
+**Concern 1**: Storing a whitelist means storing PII (like emails)—bad for privacy.
+**Solution**: Never store raw identifiers! Store only salted (well, *formId-salted*) SHA-256 hashes:
+- Hash = SHA256(`${formId}:${identifier.toLowerCase().trim()}`)
+- Compare hashes at runtime—we never see the real identifiers, just check if a hash exists.
+
+**Concern 2**: What if someone tries to submit twice with the same identifier?
+**Solution**: Track `submitted_at` on `whitelist_entries`; mark entries as used atomically when a response goes through (so no double-submit).
+
+#### 4. Gasless Experience For Everyone
+**What it is**: Creators don’t need to hold gas tokens, respondents never touch crypto at all.
+
+**Concern**: Someone has to pay for CDR vault gas—if we make creators pay, adoption dies.
+**Solution**: Use a single platform wallet to pay gas on behalf of users:
+- Fund it with testnet IP tokens (from Aeneid faucet) for now.
+- Store its private key encrypted as `PLATFORM_WALLET_PRIVATE_KEY`.
+- Add a `skipCDR` flag for local development so you can build without crypto.
+
+---
+
+## Architecture (Simplified)
+
+Here’s the full flow, end-to-end:
+
+### For a Respondent:
+1. Open public survey link: `https://confide.app/forms/[formId]`
+2. Fill out the form (no wallet needed!)
+3. Hit "Submit"
+4. Client sends answers to `POST /api/respond`
+5. Server:
+   - Validates the form is still active
+   - If whitelist enabled: checks the identifier hash
+   - Encrypts answers via CDR (uses creator’s wallet as the read condition)
+   - Allocates a unique CDR vault for the response
+   - Stores *only the vault UUID* in Supabase `responses` table
+   - Marks whitelist entry as used (if applicable)
+6. Respondent sees "Thank you!"
+
+### For a Creator:
+1. Log in via email
+2. Build a form (add questions, optionally enable whitelist)
+3. Hit "Create survey"
+4. Server:
+   - Authenticates via Supabase
+   - Allocates a CDR aggregator vault (optional, future use)
+   - Stores form definition in Supabase `forms` table (RLS protected)
+   - If whitelist enabled: stores hashed identifiers in `whitelist_entries`
+5. Creator copies share link and sends it out
+6. Later, creator opens "Results" page
+7. Client calls `GET /api/results?formId=xxx`
+8. Server:
+   - Verifies creator owns the form (RLS + explicit `creator_id` check)
+   - Fetches all vault UUIDs for the form
+   - For each vault: calls `decryptResponse()` via CDR (pays gas from platform wallet)
+   - Aggregates decrypted answers into charts/stats
+   - Returns results to client
+
+---
+
+## Who This Is For
+
+Confide is built for:
+1. **HR teams**: Running anonymous workplace feedback surveys where honesty matters.
+2. **Market researchers**: Asking sensitive questions without worrying about data leaks.
+3. **Product teams**: Collecting user feedback with a privacy guarantee that builds trust.
+4. **Anyone**: Who wants to collect responses and give respondents peace of mind.
+
+---
+
+## Impact
+
+This isn’t just another survey tool—it changes the dynamic:
+- **Respondents**: Can answer honestly because they know only the creator can read their answers.
+- **Creators**: Get higher-quality, more truthful data because people don’t hold back.
+- **Everyone**: No platform lock-in, no data mining, no privacy surprises.
+
+---
+
+## Setup (If You Want To Run It Yourself)
+
+### 1. Environment Variables
+Create `.env.local` at the root:
 ```env
-# Supabase
-NEXT_PUBLIC_SUPABASE_URL=https://xxx.supabase.co
-NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJ...
-SUPABASE_SERVICE_ROLE_KEY=eyJ...
+# Supabase (your auth + database)
+NEXT_PUBLIC_SUPABASE_URL=https://[your-project].supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=[your-anon-key]
+SUPABASE_SERVICE_ROLE_KEY=[your-service-role-key]
 
 # CDR / Story Protocol
-# Fund this wallet with testnet IP tokens (Aeneid faucet)
-PLATFORM_WALLET_PRIVATE_KEY=0x...
+# Fund this wallet with testnet IP tokens (https://faucet.story.foundation)
+PLATFORM_WALLET_PRIVATE_KEY=0x_[your-fundend-private-key]_here
 
-# Wallet encryption (change this secret, keep it safe)
-WALLET_ENCRYPTION_KEY=your-32-char-secret-key-here-!!
+# Wallet encryption (KEEP THIS SAFE, 32+ CHARS)
+WALLET_ENCRYPTION_KEY=change-this-to-something-secure-and-32-chars-min
 ```
 
-### 2. Supabase schema
+### 2. Database Schema
+Run `supabase_schema.sql` in your Supabase SQL Editor to set up tables:
+- `creator_accounts`: Links Supabase Auth users to wallets
+- `forms`: Survey definitions + whitelist settings
+- `responses`: CDR vault UUIDs per submission
+- `whitelist_entries`: Hashed access list entries
 
-Run `supabase_schema.sql` in your Supabase SQL editor. This creates:
-- `creator_accounts` — linked to Supabase Auth users, stores wallet address
-- `forms` — survey definitions with questions (JSONB)
-- `responses` — CDR vault UUIDs per submission
-
-### 3. Fund the platform wallet
-
-Get testnet IP tokens from the Aeneid faucet:  
-`https://faucet.story.foundation`
-
-The platform wallet pays for CDR vault allocation gas on behalf of users.
-
-### 4. Install & run
-
+### 3. Install & Run
 ```bash
 npm install
 npm run dev
@@ -67,41 +194,31 @@ npm run dev
 
 ---
 
-## Key files
+## Key Files To Understand The Codebase
 
-| File | Purpose |
-|---|---|
-| `src/middleware.ts` | Route protection — redirects unauthenticated users |
-| `src/lib/auth-actions.ts` | Server actions for login/signup/logout |
-| `src/lib/wallet.ts` | Platform wallet + per-user wallet generation + AES-256-GCM encryption |
-| `src/lib/cdr.ts` | CDR client singleton + vault UUID parsing |
-| `src/app/api/forms/route.ts` | Create form (allocates CDR aggregator vault) + list forms |
-| `src/app/api/respond/route.ts` | Submit response (allocate vault → encrypt → write) |
-| `src/app/api/results/route.ts` | Decrypt + aggregate results (creator only) |
-| `src/app/forms/new/page.tsx` | Survey builder UI |
+| File | What it does |
+|------|--------------|
+| `src/middleware.ts` | Route guard: redirects unauthenticated users from protected routes |
+| `src/lib/auth-actions.ts` | Login/signup/logout server actions |
+| `src/lib/wallet.ts` | Wallet generation + AES-256-GCM encryption for wallet storage |
+| `src/lib/cdr.ts` / `src/lib/cdr-server.ts` | CDR client wrappers |
+| `src/app/api/forms/route.ts` | Create new forms + list creator’s forms |
+| `src/app/api/respond/route.ts` | Submit responses (encrypt via CDR) |
+| `src/app/api/results/route.ts` | Decrypt + aggregate responses (creator only) |
+| `src/app/forms/new/page.tsx` | Form builder UI |
 | `src/app/forms/[formId]/page.tsx` | Public survey page |
 | `src/app/forms/[formId]/results/page.tsx` | Results dashboard |
-| `src/app/dashboard/page.tsx` | Creator dashboard |
+| `src/app/dashboard/page.tsx` | Creator homepage |
+| `src/components/Sidebar.tsx` | Sidebar + search modal |
 
 ---
 
-## What's been built vs what remains
+## Future Ideas (Not Built Yet)
+- Email confirmations for creators when new responses come in
+- CSV export of decrypted results
+- Form analytics (completion rate, time to finish)
+- Custom domains for white-label surveys
+- Question branching (conditional logic)
+- Rate limiting to prevent spam
+- More templates (already have a few!)
 
-### ✅ Implemented
-- Supabase auth (signup → auto wallet generation, login, logout, middleware)
-- Form builder with 6 question types (text, textarea, radio, checkbox, scale, email)
-- Native form submission → CDR encryption pipeline (no Tally dependency)
-- Results page: summary charts + individual response view
-- Dashboard: form list, response counts, copy share link, toggle active/closed
-- Fixed `/api/results` uuid bug (was hardcoded `uuid: 0`)
-- Proper `creator_id` FK on forms (RLS enforced)
-
-### 🔲 Remaining / Future
-- **Email confirmations** — Supabase sends one by default; configure in dashboard
-- **Form analytics** — submission time series, completion rate
-- **Response export** — CSV download of decrypted data
-- **Custom domains** — for white-label survey links
-- **Webhook support** — notify creator on new response
-- **Form templates** — common survey patterns (NPS, feedback, etc.)
-- **Rate limiting** — prevent response flooding
-- **Question branching** — conditional logic based on answers
