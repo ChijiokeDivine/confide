@@ -15,7 +15,9 @@ export async function GET(
     const admin = supabaseAdmin();
     const { data: form, error } = await admin
       .from("forms")
-      .select("id, title, description, questions, is_active, creator_id")
+      .select(
+        "id, title, description, questions, is_active, creator_id, whitelist_enabled, whitelist_identifier_label"
+      )
       .eq("id", formId)
       .single();
 

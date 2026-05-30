@@ -1,14 +1,70 @@
 "use client";
 
 import Link from "next/link";
-import { useState, useEffect, useRef } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { usePathname } from "next/navigation";
 import { logOut } from "@/lib/auth-actions";
+import { SURVEY_TEMPLATES } from "@/lib/templates";
 
 interface NavItem {
   name: string;
   icon: React.ReactNode;
-  href: string;
+  href?: string;
+  onClick?: () => void;
+}
+
+type SearchResultItem = {
+  id: string;
+  title: string;
+  subtitle: string;
+  href?: string;
+  kind: "link" | "template";
+  badge: string;
+  searchText: string;
+  meta?: string;
+  disabled?: boolean;
+};
+
+function normaliseSearchQuery(value: string) {
+  return value.trim().toLowerCase();
+}
+
+function getSearchScore(item: SearchResultItem, query: string) {
+  const title = item.title.toLowerCase();
+  const haystack = item.searchText.toLowerCase();
+  const terms = query.split(/\s+/).filter(Boolean);
+  let score = 0;
+
+  if (title === query) score += 120;
+  if (title.startsWith(query)) score += 70;
+  if (title.includes(query)) score += 40;
+  if (haystack.includes(query)) score += 24;
+
+  terms.forEach((term) => {
+    if (title.startsWith(term)) score += 18;
+    else if (title.includes(term)) score += 10;
+
+    if (haystack.includes(term)) score += 6;
+  });
+
+  if (item.disabled) score -= 4;
+
+  return score;
+}
+
+function filterSearchResults(items: SearchResultItem[], query: string, limit: number) {
+  const normalised = normaliseSearchQuery(query);
+
+  if (!normalised) {
+    return items.slice(0, limit);
+  }
+
+  return items
+    .map((item) => ({ item, score: getSearchScore(item, normalised) }))
+    .filter(({ score }) => score > 0)
+    .sort((a, b) => b.score - a.score || a.item.title.localeCompare(b.item.title))
+    .slice(0, limit)
+    .map(({ item }) => item);
 }
 
 export default function Sidebar({ children }: { children: React.ReactNode }) {
@@ -16,10 +72,112 @@ export default function Sidebar({ children }: { children: React.ReactNode }) {
   const [mounted, setMounted] = useState(false);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const [searchOpen, setSearchOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  const searchInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     setMounted(true);
   }, []);
+
+  useEffect(() => {
+    function handleKeyboardShortcut(event: KeyboardEvent) {
+      if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "k") {
+        event.preventDefault();
+        setDrawerOpen(false);
+        setSearchOpen(true);
+      }
+    }
+
+    window.addEventListener("keydown", handleKeyboardShortcut);
+    return () => window.removeEventListener("keydown", handleKeyboardShortcut);
+  }, []);
+
+  useEffect(() => {
+    if (!searchOpen) return;
+
+    const focusTimer = window.setTimeout(() => {
+      searchInputRef.current?.focus();
+    }, 120);
+
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+
+    function handleEscape(event: KeyboardEvent) {
+      if (event.key === "Escape") {
+        setSearchOpen(false);
+        setSearchQuery("");
+      }
+    }
+
+    window.addEventListener("keydown", handleEscape);
+
+    return () => {
+      window.clearTimeout(focusTimer);
+      document.body.style.overflow = previousOverflow;
+      window.removeEventListener("keydown", handleEscape);
+    };
+  }, [searchOpen]);
+
+  function closeSearch() {
+    setSearchOpen(false);
+    setSearchQuery("");
+  }
+
+  function openSearch() {
+    setDrawerOpen(false);
+    setSearchOpen(true);
+  }
+
+  const quickLinks = useMemo<SearchResultItem[]>(
+    () => [
+
+      {
+        id: "new-form",
+        title: "Create Survey",
+        subtitle: "Start a new encrypted survey from scratch.",
+        href: "/forms/new",
+        kind: "link",
+        badge: "Action",
+        searchText: "create survey new form questionnaire build publish",
+      },
+
+    ],
+    []
+  );
+
+  const templateResults = useMemo<SearchResultItem[]>(
+    () =>
+      SURVEY_TEMPLATES.map((template) => ({
+        id: template.id,
+        title: template.title,
+        subtitle: template.description,
+        href: `/forms/new?template=${template.id}`,
+        kind: "template",
+        badge: template.category,
+        meta: `${template.questions.length} questions · ${template.estimatedTime}`,
+        searchText: [
+          template.title,
+          template.description,
+          template.category,
+          template.useCase,
+          template.questions.map((question) => question.label).join(" "),
+        ].join(" "),
+      })),
+    []
+  );
+
+  const shortcutLabel =
+    mounted && typeof navigator !== "undefined" && /Mac|iPhone|iPad/.test(navigator.userAgent)
+      ? "Cmd K"
+      : "Ctrl K";
+
+  const hasSearchQuery = normaliseSearchQuery(searchQuery).length > 0;
+  const visibleQuickLinks = filterSearchResults(quickLinks, searchQuery, hasSearchQuery ? 6 : 4);
+  const visibleTemplates = hasSearchQuery
+    ? filterSearchResults(templateResults, searchQuery, 6)
+    : [];
+  const showEmptyState = hasSearchQuery && visibleQuickLinks.length === 0 && visibleTemplates.length === 0;
 
   const navItems: NavItem[] = [
     { 
@@ -40,7 +198,7 @@ export default function Sidebar({ children }: { children: React.ReactNode }) {
           <path d="M21 21l-4.35-4.35" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
         </svg>
       ), 
-      href: "#" 
+      onClick: openSearch,
     },
     { 
       name: "Settings", 
@@ -95,6 +253,138 @@ export default function Sidebar({ children }: { children: React.ReactNode }) {
     },
   ];
 
+  function renderSearchResultIcon(kind: SearchResultItem["kind"]) {
+    if (kind === "template") {
+      return (
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+          <rect x="3" y="3" width="18" height="18" rx="2" stroke="currentColor" strokeWidth="1.7" />
+          <path d="M3 9h18M9 21V9" stroke="currentColor" strokeWidth="1.7" />
+        </svg>
+      );
+    }
+
+    return (
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+        <path d="M7 17L17 7M17 7H9M17 7v8" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" />
+      </svg>
+    );
+  }
+
+  function renderSearchSection(title: string, items: SearchResultItem[]) {
+    if (items.length === 0) return null;
+
+    return (
+      <section className="space-y-2">
+        <div className="px-1">
+          <p className="text-[11px] uppercase tracking-[0.18em] text-neutral-400" style={{ fontFamily: "'DM Sans', sans-serif" }}>
+            {title}
+          </p>
+        </div>
+        <div className="space-y-2">
+          {items.map((item) => {
+            const content = (
+              <>
+                <div className={`mt-0.5 flex h-10 w-10 items-center justify-center rounded-2xl border ${
+                  item.disabled
+                    ? "border-neutral-200 bg-neutral-100 text-neutral-400"
+                    : "border-neutral-200 bg-neutral-50 text-neutral-700"
+                }`}>
+                  {renderSearchResultIcon(item.kind)}
+                </div>
+                <div className="min-w-0 flex-1">
+                  <div className="mb-1 flex items-center gap-2">
+                    <p className="truncate text-sm font-medium text-neutral-900" style={{ fontFamily: "'DM Sans', sans-serif" }}>
+                      {item.title}
+                    </p>
+                    <span
+                      className={`inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-medium ${
+                        item.disabled ? "bg-neutral-100 text-neutral-500" : "bg-neutral-100 text-neutral-600"
+                      }`}
+                      style={{ fontFamily: "'DM Sans', sans-serif" }}
+                    >
+                      {item.badge}
+                    </span>
+                  </div>
+                  <p className="text-sm leading-relaxed text-neutral-500" style={{ fontFamily: "'DM Sans', sans-serif" }}>
+                    {item.subtitle}
+                  </p>
+                  {item.meta && (
+                    <p className="mt-1 text-xs text-neutral-400" style={{ fontFamily: "'DM Sans', sans-serif" }}>
+                      {item.meta}
+                    </p>
+                  )}
+                </div>
+                <div className="flex h-9 items-center">
+                  <span className="rounded-full border border-neutral-200 px-2.5 py-1 text-[10px] font-medium uppercase tracking-[0.14em] text-neutral-400" style={{ fontFamily: "'DM Sans', sans-serif" }}>
+                    {item.disabled ? "Soon" : "Open"}
+                  </span>
+                </div>
+              </>
+            );
+
+            if (item.disabled || !item.href) {
+              return (
+                <div
+                  key={item.id}
+                  className="flex items-start gap-3 rounded-2xl border border-neutral-100 bg-neutral-50/80 px-4 py-4 opacity-80"
+                >
+                  {content}
+                </div>
+              );
+            }
+
+            return (
+              <Link
+                key={item.id}
+                href={item.href}
+                onClick={closeSearch}
+                className="search-result-item flex items-start gap-3 rounded-2xl border border-neutral-100 bg-white px-4 py-4"
+              >
+                {content}
+              </Link>
+            );
+          })}
+        </div>
+      </section>
+    );
+  }
+
+  function renderNavItem(item: NavItem, mobile = false) {
+    const baseClassName = `flex items-center gap-3 px-4 py-2 rounded-xl text-neutral-700 text-sm hover:bg-neutral-100 transition-colors ${
+      !mobile && sidebarCollapsed ? "justify-center" : ""
+    } ${item.href && pathname === item.href ? "bg-neutral-100" : ""}`;
+
+    if (item.onClick) {
+      return (
+        <button
+          key={item.name}
+          type="button"
+          onClick={item.onClick}
+          className={`${baseClassName} w-full ${mobile ? "" : "text-left"}`}
+          style={{ fontFamily: "'DM Sans', sans-serif" }}
+        >
+          {item.icon}
+          {(!sidebarCollapsed || mobile) && <span className="font-medium">{item.name}</span>}
+        </button>
+      );
+    }
+
+    return (
+      <Link
+        key={item.name}
+        href={item.href ?? "#"}
+        onClick={() => {
+          if (mobile) setDrawerOpen(false);
+        }}
+        className={baseClassName}
+        style={{ fontFamily: "'DM Sans', sans-serif" }}
+      >
+        {item.icon}
+        {(!sidebarCollapsed || mobile) && <span className="font-medium">{item.name}</span>}
+      </Link>
+    );
+  }
+
   return (
     <div className={`min-h-screen bg-white ${mounted ? "ready" : ""}`}>
       <style>{`
@@ -105,6 +395,8 @@ export default function Sidebar({ children }: { children: React.ReactNode }) {
         .ready .anim-in.d3 { animation-delay: 0.25s; }
         .ready .anim-in.d4 { animation-delay: 0.35s; }
         @keyframes fadeUp { from { opacity:0; transform:translateY(16px); } to { opacity:1; transform:translateY(0); } }
+        .search-result-item { transition: border-color 0.18s ease,  }
+        .search-result-item:hover { border-color: #f3f3f4ff;  }
       `}</style>
 
       {/* Mobile Drawer Overlay */}
@@ -129,20 +421,7 @@ export default function Sidebar({ children }: { children: React.ReactNode }) {
             </button>
           </div>
           <nav className="space-y-2">
-            {navItems.map((item) => (
-              <Link 
-                key={item.name} 
-                href={item.href} 
-                onClick={() => setDrawerOpen(false)}
-                className={`flex items-center gap-3 px-4 py-2 rounded-xl text-neutral-700 text-sm hover:bg-neutral-100 transition-colors ${
-                  pathname === item.href ? "bg-neutral-100" : ""
-                }`}
-                style={{ fontFamily: "'DM Sans', sans-serif" }}
-              >
-                {item.icon}
-                <span className="font-medium">{item.name}</span>
-              </Link>
-            ))}
+            {navItems.map((item) => renderNavItem(item, true))}
           </nav>
         </div>
         <div className="absolute bottom-0 left-0 right-0 p-6 border-t border-neutral-100">
@@ -183,19 +462,7 @@ export default function Sidebar({ children }: { children: React.ReactNode }) {
             </button>
           </div>
           <nav className="space-y-2">
-            {navItems.map((item) => (
-              <Link 
-                key={item.name} 
-                href={item.href}
-                className={`flex items-center gap-3 px-4 py-2 rounded-xl text-neutral-700 text-sm hover:bg-neutral-100 transition-colors ${
-                  sidebarCollapsed ? "justify-center" : ""
-                } ${pathname === item.href ? "bg-neutral-100" : ""}`}
-                style={{ fontFamily: "'DM Sans', sans-serif" }}
-              >
-                {item.icon}
-                {!sidebarCollapsed && <span className="font-medium">{item.name}</span>}
-              </Link>
-            ))}
+            {navItems.map((item) => renderNavItem(item))}
           </nav>
         </div>
         <div className="absolute bottom-0 left-0 right-0 p-6 border-t border-neutral-100">
@@ -231,6 +498,115 @@ export default function Sidebar({ children }: { children: React.ReactNode }) {
 
         {children}
       </div>
+
+      {searchOpen && (
+        <div className="fixed inset-0 z-[60] p-4 md:p-8" onClick={closeSearch}>
+          <div className="absolute inset-0 bg-neutral-950/20 backdrop-blur-[2px]" />
+          <div className="relative mx-auto mt-6 w-full max-w-3xl md:mt-16" onClick={(event) => event.stopPropagation()}>
+            <div className="overflow-hidden rounded-[15px] border border-neutral-200 bg-white shadow-[0_24px_80px_rgba(0,0,0,0.14)]">
+              <div className="border-b border-neutral-100 px-5 py-5 md:px-6">
+                <div className="mb-4 flex items-center justify-between gap-3">
+                  <div>
+                    
+                    <h2 className="text-lg font-semibold text-neutral-900" style={{ fontFamily: "'DM Sans', sans-serif" }}>
+                      Find links and templates
+                    </h2>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="hidden rounded-full border border-neutral-200 px-2.5 py-1 text-[11px] font-medium text-neutral-400 md:inline-flex" style={{ fontFamily: "'DM Sans', sans-serif" }}>
+                      {shortcutLabel}
+                    </span>
+                    <button
+                      type="button"
+                      onClick={closeSearch}
+                      className="flex h-10 w-10 items-center justify-center rounded-full border border-neutral-200 text-neutral-500 transition-colors hover:border-neutral-300 hover:bg-neutral-50 hover:text-neutral-700"
+                    >
+                      <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                        <path d="M3 3l10 10M13 3L3 13" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+                      </svg>
+                    </button>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-3 rounded-[10px] border border-neutral-200 bg-neutral-50 px-4 py-3 focus-within:border-neutral-300 focus-within:bg-white">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" className="text-neutral-400">
+                    <circle cx="11" cy="11" r="7" stroke="currentColor" strokeWidth="1.8" />
+                    <path d="M20 20l-3.5-3.5" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+                  </svg>
+                  <input
+                    ref={searchInputRef}
+                    type="text"
+                    value={searchQuery}
+                    onChange={(event) => setSearchQuery(event.target.value)}
+                    placeholder="Search settings, templates, help, and more..."
+                    className="w-full bg-transparent text-[15px] text-neutral-900 placeholder:text-neutral-400 focus:outline-none"
+                    style={{ fontFamily: "'DM Sans', sans-serif" }}
+                  />
+                  {searchQuery && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setSearchQuery("");
+                        searchInputRef.current?.focus();
+                      }}
+                      className="rounded-full border border-neutral-200 px-2.5 py-1 text-[11px] font-medium text-neutral-500 transition-colors hover:border-neutral-300 hover:bg-white hover:text-neutral-700"
+                      style={{ fontFamily: "'DM Sans', sans-serif" }}
+                    >
+                      Clear
+                    </button>
+                  )}
+                </div>
+              </div>
+
+              <div className="max-h-[70vh] overflow-y-auto px-5 py-5 md:px-6">
+                <div className="mb-5 flex flex-wrap items-center gap-2">
+                  {[
+                    "Quick links",
+                    ...(hasSearchQuery ? ["Templates"] : []),
+                  ].map((label) => (
+                    <span
+                      key={label}
+                      className="inline-flex items-center rounded-full border border-neutral-200 bg-neutral-50 px-3 py-1 text-xs text-neutral-500"
+                      style={{ fontFamily: "'DM Sans', sans-serif" }}
+                    >
+                      {label}
+                    </span>
+                  ))}
+                </div>
+
+                <div className="space-y-6">
+                  {renderSearchSection(hasSearchQuery ? "Matching Links" : "Suggested Links", visibleQuickLinks)}
+                  {hasSearchQuery && renderSearchSection("Matching Templates", visibleTemplates)}
+
+                  {showEmptyState && (
+                    <div className="rounded-3xl border border-dashed border-neutral-200 bg-neutral-50 px-6 py-10 text-center">
+                      <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-white border border-neutral-200 text-neutral-500">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                          <circle cx="11" cy="11" r="7" stroke="currentColor" strokeWidth="1.8" />
+                          <path d="M20 20l-3.5-3.5" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+                        </svg>
+                      </div>
+                      <p className="mb-1 text-sm font-medium text-neutral-900" style={{ fontFamily: "'DM Sans', sans-serif" }}>
+                        No matches found
+                      </p>
+                      <p className="text-sm text-neutral-500" style={{ fontFamily: "'DM Sans', sans-serif" }}>
+                        Try a broader keyword like "settings", "template", or part of a survey title.
+                      </p>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              <div className=" px-5 py-4 md:px-6">
+                <div className="flex items-center justify-between gap-3 text-xs text-neutral-400" style={{ fontFamily: "'DM Sans', sans-serif" }}>
+                 
+                  
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

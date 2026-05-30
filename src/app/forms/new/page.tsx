@@ -303,14 +303,14 @@ function NewFormInner() {
                 <div>
                   <label className="block text-sm font-medium text-neutral-700 mb-2" style={{ fontFamily: "'DM Sans', sans-serif" }}>Survey title *</label>
                   <input type="text" value={title} onChange={(e) => setTitle(e.target.value)}
-                    className="w-full px-4 py-3 rounded-xl border border-neutral-200 bg-white text-neutral-900 transition-all focus:ring-1 focus:ring-neutral-300 focus:border-neutral-300"
+                    className="w-full font-semibold px-4 py-3 rounded-xl border border-neutral-200 bg-white text-neutral-900 transition-all focus:ring-1 focus:ring-neutral-300 focus:border-neutral-300 text-sm md:text-lg"
                     placeholder="e.g., Employee satisfaction Q3 2025"
                     style={{ fontFamily: "'DM Sans', sans-serif" }} />
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-neutral-700 mb-2" style={{ fontFamily: "'DM Sans', sans-serif" }}>Description (optional)</label>
                   <textarea value={description} onChange={(e) => setDescription(e.target.value)} rows={3}
-                    className="w-full px-4 py-3 rounded-xl border border-neutral-200 bg-white text-neutral-900 transition-all focus:ring-1 focus:ring-neutral-300 resize-none"
+                    className="w-full px-4 py-3 rounded-xl border border-neutral-200 bg-white text-neutral-900 transition-all focus:ring-1 focus:ring-neutral-300 resize-none text-sm md:text-md"
                     placeholder="Brief description shown to respondents"
                     style={{ fontFamily: "'DM Sans', sans-serif" }} />
                 </div>
