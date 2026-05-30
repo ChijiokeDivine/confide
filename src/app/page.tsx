@@ -143,7 +143,7 @@ export default function NovuHomePage() {
         </header>
 
         {/* Hero copy + CTA */}
-        <div className="absolute inset-x-0 bottom-0 z-10 flex flex-col items-center pb-12 text-center">
+        <div className="absolute inset-x-0 bottom-8 md:bottom-0 z-10 flex flex-col items-center pb-12 text-center">
           <h1
             className="anim-h1 mb-4 max-w-4xl px-4 text-[clamp(3rem,7vw,6.5rem)] font-normal leading-[1.05] tracking-tight text-white"
             style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
