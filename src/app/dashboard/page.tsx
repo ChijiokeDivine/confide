@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { supabaseBrowser } from "@/lib/supabase-client";
 import Sidebar from "@/components/Sidebar";
+import Skeleton from "@/components/Skeleton";
 
 type FormSummary = {
   id: string;
@@ -123,26 +124,63 @@ export default function DashboardPage() {
 
         {/* Stats row */}
         <div className="anim-in d2 grid grid-cols-2 md:grid-cols-3 gap-3 md:gap-4 mb-8 md:mb-10">
-          {[
-            { label: "Total surveys", value: forms.length },
-            { label: "Active surveys", value: activeForms },
-            { label: "Encrypted responses", value: totalResponses },
-          ].map((s, index) => (
-            <div 
-              key={s.label} 
-              className={`rounded-2xl border border-neutral-100 bg-neutral-50 p-5 md:p-6 ${index === 2 ? "col-span-2 md:col-span-1" : ""}`}
-            >
-              <p className="text-xs text-neutral-400 uppercase tracking-[0.14em] mb-3" style={{ fontFamily: "'DM Sans', sans-serif" }}>{s.label}</p>
-              <p className="text-2xl md:text-3xl font-semibold text-neutral-900" style={{ fontFamily: "'DM Sans', sans-serif" }}>{s.value}</p>
-            </div>
-          ))}
+          {loading ? (
+            <>
+              <div className="rounded-2xl border border-neutral-100 bg-neutral-50 p-5 md:p-6">
+                <Skeleton className="h-3 w-24 mb-3" />
+                <Skeleton className="h-8 w-12" />
+              </div>
+              <div className="rounded-2xl border border-neutral-100 bg-neutral-50 p-5 md:p-6">
+                <Skeleton className="h-3 w-28 mb-3" />
+                <Skeleton className="h-8 w-10" />
+              </div>
+              <div className="rounded-2xl border border-neutral-100 bg-neutral-50 p-5 md:p-6 col-span-2 md:col-span-1">
+                <Skeleton className="h-3 w-36 mb-3" />
+                <Skeleton className="h-8 w-14" />
+              </div>
+            </>
+          ) : (
+            [
+              { label: "Total surveys", value: forms.length },
+              { label: "Active surveys", value: activeForms },
+              { label: "Encrypted responses", value: totalResponses },
+            ].map((s, index) => (
+              <div 
+                key={s.label} 
+                className={`rounded-2xl border border-neutral-100 bg-neutral-50 p-5 md:p-6 ${index === 2 ? "col-span-2 md:col-span-1" : ""}`}
+              >
+                <p className="text-xs text-neutral-400 uppercase tracking-[0.14em] mb-3" style={{ fontFamily: "'DM Sans', sans-serif" }}>{s.label}</p>
+                <p className="text-2xl md:text-3xl font-semibold text-neutral-900" style={{ fontFamily: "'DM Sans', sans-serif" }}>{s.value}</p>
+              </div>
+            ))
+          )}
         </div>
 
         {/* Forms list */}
         <div className="anim-in d3">
           {loading ? (
-            <div className="flex items-center justify-center py-20 text-neutral-400" style={{ fontFamily: "'DM Sans', sans-serif" }}>
-              Loading…
+            <div className="space-y-3">
+              <div className="rounded-2xl border border-neutral-100 bg-white px-4 md:px-6 py-4 md:py-5">
+                <div className="flex items-center gap-2 mb-2">
+                  <Skeleton className="h-5 w-32" />
+                  <Skeleton className="h-4 w-16" />
+                </div>
+                <Skeleton className="h-4 w-48" />
+              </div>
+              <div className="rounded-2xl border border-neutral-100 bg-white px-4 md:px-6 py-4 md:py-5">
+                <div className="flex items-center gap-2 mb-2">
+                  <Skeleton className="h-5 w-40" />
+                  <Skeleton className="h-4 w-16" />
+                </div>
+                <Skeleton className="h-4 w-56" />
+              </div>
+              <div className="rounded-2xl border border-neutral-100 bg-white px-4 md:px-6 py-4 md:py-5">
+                <div className="flex items-center gap-2 mb-2">
+                  <Skeleton className="h-5 w-36" />
+                  <Skeleton className="h-4 w-16" />
+                </div>
+                <Skeleton className="h-4 w-44" />
+              </div>
             </div>
           ) : forms.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-20 text-center">

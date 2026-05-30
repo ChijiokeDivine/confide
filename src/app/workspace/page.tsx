@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { supabaseBrowser } from "@/lib/supabase-client";
 import Sidebar from "@/components/Sidebar";
+import Skeleton from "@/components/Skeleton";
 
 type FormSummary = {
   id: string;
@@ -117,8 +118,40 @@ export default function WorkspacePage() {
         {/* Forms list */}
         <div className="anim-in d2">
           {loading ? (
-            <div className="flex items-center justify-center py-20 text-neutral-400" style={{ fontFamily: "'DM Sans', sans-serif" }}>
-              Loading…
+            <div className="space-y-3">
+              <div className="rounded-2xl border border-neutral-100 bg-white px-4 md:px-6 py-4 md:py-5">
+                <div className="flex items-center gap-2 mb-2">
+                  <Skeleton className="h-5 w-36" />
+                  <Skeleton className="h-4 w-16" />
+                </div>
+                <Skeleton className="h-4 w-48 mb-3" />
+                <div className="flex items-center gap-3">
+                  <Skeleton className="h-4 w-32" />
+                  <Skeleton className="h-4 w-36" />
+                </div>
+              </div>
+              <div className="rounded-2xl border border-neutral-100 bg-white px-4 md:px-6 py-4 md:py-5">
+                <div className="flex items-center gap-2 mb-2">
+                  <Skeleton className="h-5 w-40" />
+                  <Skeleton className="h-4 w-16" />
+                </div>
+                <Skeleton className="h-4 w-56 mb-3" />
+                <div className="flex items-center gap-3">
+                  <Skeleton className="h-4 w-32" />
+                  <Skeleton className="h-4 w-36" />
+                </div>
+              </div>
+              <div className="rounded-2xl border border-neutral-100 bg-white px-4 md:px-6 py-4 md:py-5">
+                <div className="flex items-center gap-2 mb-2">
+                  <Skeleton className="h-5 w-32" />
+                  <Skeleton className="h-4 w-16" />
+                </div>
+                <Skeleton className="h-4 w-44 mb-3" />
+                <div className="flex items-center gap-3">
+                  <Skeleton className="h-4 w-32" />
+                  <Skeleton className="h-4 w-36" />
+                </div>
+              </div>
             </div>
           ) : forms.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-20 text-center">
