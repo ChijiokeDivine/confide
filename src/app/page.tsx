@@ -156,7 +156,7 @@ export default function NovuHomePage() {
             className="anim-p mb-10 max-w-xl px-6 text-[clamp(0.9rem,1.5vw,1.05rem)] leading-relaxed text-white/80"
             style={{ fontFamily: "'DM Sans', sans-serif" }}
           >
-            Collect sensitive feedback without exposing your users. Employee surveys, DAO votes, research forms - encrypted, aggregated only by you.
+            Collect sensitive feedback without exposing your users. Employee surveys, DAO votes, research forms - encrypted<span className="hidden md:inline-block">& aggregated only by you.</span>
           </p>
 
           <div className="anim-cta">
