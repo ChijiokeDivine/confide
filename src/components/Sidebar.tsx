@@ -168,6 +168,15 @@ export default function Sidebar({ children }: { children: React.ReactNode }) {
         searchText: "templates pre-built surveys examples",
       },
       {
+        id: "help",
+        title: "Help",
+        subtitle: "Find answers to common questions and guides.",
+        href: "/help",
+        kind: "link",
+        badge: "Page",
+        searchText: "help center faq support guide answers questions",
+      },
+      {
         id: "settings",
         title: "Settings",
         subtitle: "Manage your account and preferences.",
@@ -283,7 +292,7 @@ export default function Sidebar({ children }: { children: React.ReactNode }) {
           <path d="M12 17h.01" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
         </svg>
       ), 
-      href: "#" 
+      href: "/help" 
     },
   ];
 
