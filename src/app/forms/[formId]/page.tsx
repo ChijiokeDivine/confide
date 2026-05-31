@@ -8,11 +8,13 @@ import type { Form, Question } from "@/types";
 type FormWithWhitelist = Form & {
   whitelist_enabled: boolean;
   whitelist_identifier_label: string;
+  closing_date: string | null;
 };
 
 export default function PublicFormPage() {
   const params = useParams<{ formId: string }>();
   const [form, setForm] = useState<FormWithWhitelist | null>(null);
+  const [formClosed, setFormClosed] = useState(false);
   const [loading, setLoading] = useState(true);
   const [answers, setAnswers] = useState<Record<string, unknown>>({});
   const [submitting, setSubmitting] = useState(false);
@@ -39,7 +41,15 @@ export default function PublicFormPage() {
       const res = await fetch(`/api/forms/${params.formId}/public`);
       if (!res.ok) throw new Error("Form not found");
       const data = await res.json();
-      setForm(data.form);
+      const formData = data.form;
+      setForm(formData);
+      // Check if form is closed by date
+      if (formData.closing_date) {
+        const closingDate = new Date(formData.closing_date);
+        if (new Date() > closingDate) {
+          setFormClosed(true);
+        }
+      }
     } catch {
       setError("This survey could not be found or is no longer active.");
     } finally {
@@ -193,13 +203,39 @@ export default function PublicFormPage() {
     }
   }
 
-  // ── Loading / error shells ─────────────────────────────────────────────────
+  // ── Loading / error / closed shells ────────────────────────────────────────
   if (!mounted || loading) {
     return (
       <div className="min-h-screen bg-white flex items-center justify-center">
         <div className="text-neutral-400" style={{ fontFamily: "'DM Sans', sans-serif" }}>
           Loading…
         </div>
+      </div>
+    );
+  }
+
+  if (formClosed) {
+    return (
+      <div className="min-h-screen bg-white flex flex-col items-center justify-center px-6 text-center">
+        <div className="mb-6 w-14 h-14 rounded-full bg-neutral-200 flex items-center justify-center">
+          <svg width="22" height="22" viewBox="0 0 22 22" fill="none" className="text-neutral-500">
+            <path d="M3.6665 7.33337C3.6665 5.49245 5.15904 4.00001 6.99996 4.00001H15C16.8409 4.00001 18.3334 5.49245 18.3334 7.33337V14.6667C18.3334 16.5076 16.8409 18 15 18H6.99996C5.15904 18 3.6665 16.5076 3.6665 14.6667V7.33337Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+            <path d="M11 9.66667V13" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+            <path d="M11 15.6667H11.0092" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+          </svg>
+        </div>
+        <h1
+          className="text-2xl font-semibold text-neutral-900 mb-2"
+          style={{ fontFamily: "'DM Sans', sans-serif" }}
+        >
+          This survey is closed
+        </h1>
+        <p
+          className="text-neutral-500 max-w-sm"
+          style={{ fontFamily: "'DM Sans', sans-serif" }}
+        >
+          This survey is no longer accepting responses.
+        </p>
       </div>
     );
   }

@@ -62,6 +62,7 @@ function NewFormInner() {
   const [insufficientFunds, setInsufficientFunds] = useState(false);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
+  const [closingDate, setClosingDate] = useState(""); // ISO datetime-local string
   const [questions, setQuestions] = useState<Question[]>([newQuestion()]);
   const [whitelist, setWhitelist] = useState<WhitelistConfig>({
     enabled: false,
@@ -189,6 +190,7 @@ function NewFormInner() {
           title,
           description,
           questions,
+          closingDate: closingDate || null,
           whitelist: whitelist.enabled
             ? { enabled: true, identifierLabel: whitelist.identifierLabel, identifiers: ids }
             : { enabled: false, identifierLabel: whitelist.identifierLabel, identifiers: [] },
@@ -313,6 +315,15 @@ function NewFormInner() {
                     className="w-full px-4 py-3 rounded-xl border border-neutral-200 bg-white text-neutral-900 transition-all focus:ring-1 focus:ring-neutral-300 resize-none text-sm md:text-md"
                     placeholder="Brief description shown to respondents"
                     style={{ fontFamily: "'DM Sans', sans-serif" }} />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-neutral-700 mb-2" style={{ fontFamily: "'DM Sans', sans-serif" }}>Closing date (optional)</label>
+                  <input type="datetime-local" value={closingDate} onChange={(e) => setClosingDate(e.target.value)}
+                    className="w-full px-4 py-3 rounded-xl border border-neutral-200 bg-white text-neutral-900 transition-all focus:ring-1 focus:ring-neutral-300 text-sm md:text-md"
+                    style={{ fontFamily: "'DM Sans', sans-serif" }} />
+                  <p className="text-xs text-neutral-400 mt-1" style={{ fontFamily: "'DM Sans', sans-serif" }}>
+                    The survey will automatically stop accepting responses after this date and time.
+                  </p>
                 </div>
               </div>
             )}

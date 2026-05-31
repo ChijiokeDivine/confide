@@ -1,11 +1,14 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useRef } from "react";
 import { useParams } from "next/navigation";
+import { createPortal } from "react-dom";
 import { supabaseBrowser } from "@/lib/supabase-client";
 import type { Question } from "@/types";
 import Sidebar from "@/components/Sidebar";
+import { pdf } from "@react-pdf/renderer";
+import ResponsePDF from "@/components/ResponsePDF";
 
 type ResultsData = {
   formId: string;
@@ -14,6 +17,8 @@ type ResultsData = {
   answers: Record<string, unknown[]>;
   rawResponses: Array<{ responseId: string; submittedAt: string; answers: Record<string, unknown> }>;
   questions: Question[];
+  formTitle: string;
+  formDescription?: string | null;
 };
 
 type CacheEntry = {
@@ -122,6 +127,85 @@ export default function ResultsPage() {
   const [loadSource, setLoadSource] = useState<LoadSource>(null);
   const [cacheMeta, setCacheMeta] = useState<{ cachedAt: number; responseCount: number } | null>(null);
   const [refreshing, setRefreshing] = useState(false);
+  const [pdfPreview, setPdfPreview] = useState<{ blob: Blob; filename: string } | null>(null);
+  const [exportDropdownOpen, setExportDropdownOpen] = useState(false);
+  const [exportDropdownPosition, setExportDropdownPosition] = useState<{ top: number; left: number } | null>(null);
+  const exportButtonRef = useRef<HTMLButtonElement>(null);
+
+  function updateExportDropdownPosition() {
+    const button = exportButtonRef.current;
+    if (!button) return;
+
+    const rect = button.getBoundingClientRect();
+    const dropdownWidth = 224;
+    const viewportPadding = 16;
+    const left = Math.min(
+      Math.max(viewportPadding, rect.right - dropdownWidth),
+      window.innerWidth - dropdownWidth - viewportPadding
+    );
+
+    setExportDropdownPosition({
+      top: rect.bottom + 8,
+      left,
+    });
+  }
+
+  function toggleExportDropdown() {
+    if (exportDropdownOpen) {
+      setExportDropdownOpen(false);
+      return;
+    }
+
+    updateExportDropdownPosition();
+    setExportDropdownOpen(true);
+  }
+
+  // Export functions
+  async function exportToPDF(response: ResultsData["rawResponses"][0], previewOnly = false) {
+    if (!results) return;
+    
+    const blob = await pdf(
+      <ResponsePDF
+        formTitle={results.formTitle}
+        formDescription={results.formDescription ?? undefined}
+        response={response}
+        questions={results.questions}
+      />
+    ).toBlob();
+
+    const filename = `${(results.formTitle || "response").replace(/[^a-zA-Z0-9-_]/g, "_")}_response_${response.responseId.slice(0,8)}_${new Date().toISOString().split("T")[0]}.pdf`;
+
+    if (previewOnly) {
+      setPdfPreview({ blob, filename });
+    } else {
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = filename;
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+  }
+
+  async function exportToCSV() {
+    if (!params.formId) return;
+    const url = `/api/export?formId=${params.formId}&type=csv`;
+    window.location.href = url;
+    setExportDropdownOpen(false);
+  }
+
+  function exportToJSON() {
+    if (!results) return;
+    const dataStr = JSON.stringify(results.rawResponses, null, 2);
+    const blob = new Blob([dataStr], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `${(results.formTitle || "responses").replace(/[^a-zA-Z0-9-_]/g, "_")}_${new Date().toISOString().split("T")[0]}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+    setExportDropdownOpen(false);
+  }
 
   const loadResults = useCallback(async (forceRefresh = false) => {
     if (!params.formId) return;
@@ -158,12 +242,15 @@ export default function ResultsPage() {
         if (cachedCount !== null && cachedCount === liveCount) {
           setLoadingMsg("Decrypting cached results…");
           const cached = await readCache(params.formId, accessToken);
-          if (cached) {
+          // Check if cache has formTitle (new format), otherwise clear and re-fetch
+          if (cached && cached.formTitle) {
             setResults(cached);
             setLoadSource("cache");
             setCacheMeta(getCacheMeta(params.formId));
             setLoading(false);
             return;
+          } else {
+            clearCache(params.formId);
           }
         }
       }
@@ -191,6 +278,39 @@ export default function ResultsPage() {
   useEffect(() => {
     loadResults();
   }, [loadResults]);
+
+  useEffect(() => {
+    if (!exportDropdownOpen) return;
+
+    const handleReposition = () => updateExportDropdownPosition();
+    window.addEventListener("resize", handleReposition);
+    window.addEventListener("scroll", handleReposition, true);
+
+    return () => {
+      window.removeEventListener("resize", handleReposition);
+      window.removeEventListener("scroll", handleReposition, true);
+    };
+  }, [exportDropdownOpen]);
+
+  // Close export dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent | TouchEvent) => {
+      const target = event.target as HTMLElement;
+      const isDropdownButton = target.closest('[data-export-dropdown-button]');
+      const isDropdownMenu = target.closest('[data-dropdown-menu]');
+      
+      if (!isDropdownButton && !isDropdownMenu) {
+        setExportDropdownOpen(false);
+      }
+    };
+    
+    document.addEventListener('mousedown', handleClickOutside);
+    document.addEventListener('touchstart', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener('touchstart', handleClickOutside);
+    };
+  }, []);
 
   async function handleForceRefresh() {
     clearCache(params.formId!);
@@ -343,15 +463,39 @@ export default function ResultsPage() {
                   )}
                 </div>
 
-                {/* View toggle */}
-                <div className="flex rounded-xl border border-neutral-200 overflow-hidden">
-                  {(["summary", "individual"] as const).map((v) => (
-                    <button key={v} onClick={() => setView(v)}
-                      className={`px-4 py-2 text-sm transition-colors ${view === v ? "bg-neutral-900 text-white" : "text-neutral-600 hover:bg-neutral-50"}`}
-                      style={{ fontFamily: "'DM Sans', sans-serif" }}>
-                      {v === "summary" ? "Summary" : "Individual"}
+                {/* View and export actions */}
+                <div className="flex items-center gap-3 flex-wrap relative" >
+                  {/* Export Dropdown */}
+                  <div className="relative " >
+                    <button
+                      ref={exportButtonRef}
+                      data-export-dropdown-button
+                      onClick={toggleExportDropdown}
+                      className="flex items-center gap-2 px-4 py-2 text-sm rounded-xl border border-neutral-200 text-neutral-700 hover:bg-neutral-50 transition-colors"
+                      style={{ fontFamily: "'DM Sans', sans-serif" }}
+                    >
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" className="text-neutral-600">
+                        <path d="M4 17V7C4 5.89543 4.89543 5 6 5H13L20 12V17C20 18.1046 19.1046 19 18 19H6C4.89543 19 4 18.1046 4 17Z" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round"/>
+                        <path d="M13 5V12H20" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                        <path d="M8 13L10 15L16 9" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                      </svg>
+                      Export
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" className={`text-neutral-400 transition-transform ${exportDropdownOpen ? 'rotate-180' : ''}`}>
+                        <path d="M6 9L12 15L18 9" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                      </svg>
                     </button>
-                  ))}
+                  </div>
+                  
+                  {/* View toggle */}
+                  <div className="flex rounded-xl border border-neutral-200 overflow-hidden">
+                    {(["summary", "individual"] as const).map((v) => (
+                      <button key={v} onClick={() => setView(v)}
+                        className={`px-4 py-2 text-sm transition-colors ${view === v ? "bg-neutral-900 text-white" : "text-neutral-600 hover:bg-neutral-50"}`}
+                        style={{ fontFamily: "'DM Sans', sans-serif" }}>
+                        {v === "summary" ? "Summary" : "Individual"}
+                      </button>
+                    ))}
+                  </div>
                 </div>
               </div>
             </div>
@@ -431,11 +575,24 @@ export default function ResultsPage() {
                       <span className="text-sm font-medium text-neutral-900" style={{ fontFamily: "'DM Sans', sans-serif" }}>
                         Response #{results.rawResponses.length - idx}
                       </span>
-                      <span className="text-xs text-neutral-400" style={{ fontFamily: "'DM Sans', sans-serif" }}>
-                        {new Date(response.submittedAt).toLocaleDateString("en-GB", {
-                          day: "2-digit", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit",
-                        })}
-                      </span>
+                      <div className="flex items-center gap-2">
+                        <span className="text-xs text-neutral-400" style={{ fontFamily: "'DM Sans', sans-serif" }}>
+                          {new Date(response.submittedAt).toLocaleDateString("en-GB", {
+                            day: "2-digit", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit",
+                          })}
+                        </span>
+                        <button onClick={() => exportToPDF(response, true)}
+                          className="flex items-center gap-1.5 px-3 py-1.5 text-xs rounded-lg border border-neutral-200 text-neutral-600 hover:bg-neutral-50 transition-colors"
+                          style={{ fontFamily: "'DM Sans', sans-serif" }}>
+                          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" className="text-neutral-500">
+                            <path d="M6 20H18C19.1046 20 20 19.1046 20 18V8L14 2H6C4.89543 2 4 2.89543 4 4V20C4 21.1046 4.89543 22 6 22V20Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                            <path d="M14 2V8H20" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                            <path d="M8 12H16" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+                            <path d="M8 16H14" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+                          </svg>
+                          Preview PDF
+                        </button>
+                      </div>
                     </div>
                     <div className="space-y-3">
                       {Object.entries(response.answers).map(([label, val]) => (
@@ -464,6 +621,82 @@ export default function ResultsPage() {
           </>
         )}
       </main>
+
+      {/* PDF Preview Modal */}
+      {exportDropdownOpen && exportDropdownPosition && createPortal(
+        <div
+          data-dropdown-menu
+          className="fixed w-56 rounded-xl border border-neutral-200 bg-white py-1 shadow-lg z-[1200]"
+          style={{ top: exportDropdownPosition.top, left: exportDropdownPosition.left }}
+        >
+          <button onClick={exportToCSV}
+            className="w-full px-4 py-2.5 text-left text-sm font-medium text-neutral-700 hover:bg-neutral-50 transition-colors flex items-center gap-2"
+            style={{ fontFamily: "'DM Sans', sans-serif" }}>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" className="text-neutral-500">
+              <path d="M9 17H15" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+              <path d="M9 13H15" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+              <path d="M9 9H15" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+              <path d="M4 19C4 19.5304 4.21071 20.0391 4.58579 20.4142C4.96086 20.7893 5.46957 21 6 21H18C18.5304 21 19.0391 20.7893 19.4142 20.4142C19.7893 20.0391 20 19.5304 20 19V5C20 4.46957 19.7893 3.96086 19.4142 3.58579C19.0391 3.21071 18.5304 3 18 3H6C5.46957 3 4.96086 3.21071 4.58579 3.58579C4.21071 3.96086 4 4.46957 4 5V19Z" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round"/>
+            </svg>
+            Export as CSV
+          </button>
+          <button onClick={exportToJSON}
+            className="w-full px-4 py-2.5 text-left text-sm font-medium text-neutral-700 hover:bg-neutral-50 transition-colors flex items-center gap-2"
+            style={{ fontFamily: "'DM Sans', sans-serif" }}>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" className="text-neutral-500">
+              <path d="M4 7H7C8.06087 7 9.07828 7.42143 9.82843 8.17157C10.5786 8.92172 11 9.93913 11 11C11 12.0609 10.5786 13.0783 9.82843 13.8284C9.07828 14.5786 8.06087 15 7 15H4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+              <path d="M20 17H17C15.9391 17 14.9217 16.5786 14.1716 15.8284C13.4214 15.0783 13 14.0609 13 13C13 11.9391 13.4214 10.9217 14.1716 10.1716C14.9217 9.42143 15.9391 9 17 9H20" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
+            Export as JSON
+          </button>
+        </div>,
+        document.body
+      )}
+
+      {pdfPreview && (
+        <div className="fixed inset-0 bg-black/70 z-50 flex items-center justify-center p-4" onClick={() => setPdfPreview(null)}>
+          <div className="bg-white rounded-2xl w-full max-w-4xl max-h-[90vh] flex flex-col" onClick={e => e.stopPropagation()}>
+            <div className="flex items-center justify-between px-6 py-4 border-b border-neutral-100">
+              <h3 className="text-lg font-semibold text-neutral-900" style={{ fontFamily: "'DM Sans', sans-serif" }}>
+                {pdfPreview.filename}
+              </h3>
+              <div className="flex items-center gap-3">
+                <button onClick={() => {
+                  const url = URL.createObjectURL(pdfPreview.blob);
+                  const a = document.createElement("a");
+                  a.href = url;
+                  a.download = pdfPreview.filename;
+                  a.click();
+                  URL.revokeObjectURL(url);
+                }}
+                  className="flex items-center gap-2 px-4 py-2 text-sm rounded-xl bg-neutral-900 text-white hover:bg-neutral-800 transition-colors"
+                  style={{ fontFamily: "'DM Sans', sans-serif" }}>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" className="text-white">
+                    <path d="M21 15V19C21 19.5304 20.7893 20.0391 20.4142 20.4142C20.0391 20.7893 19.5304 21 19 21H5C4.46957 21 3.96086 20.7893 3.58579 20.4142C3.21071 20.0391 3 19.5304 3 19V15" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                    <path d="M7 10L12 15L17 10" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                    <path d="M12 15V3" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                  </svg>
+                  Download
+                </button>
+                <button onClick={() => setPdfPreview(null)}
+                  className="p-2 rounded-lg hover:bg-neutral-100 transition-colors"
+                  title="Close preview">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" className="text-neutral-500">
+                    <path d="M18 6L6 18M6 6L18 18" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                  </svg>
+                </button>
+              </div>
+            </div>
+            <div className="flex-1 overflow-auto p-4">
+              <iframe
+                src={URL.createObjectURL(pdfPreview.blob)}
+                className="w-full h-[70vh] border border-neutral-200 rounded-xl"
+                title="PDF Preview"
+              />
+            </div>
+          </div>
+        </div>
+      )}
     </Sidebar>
   );
 }

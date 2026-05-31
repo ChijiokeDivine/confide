@@ -2,23 +2,60 @@
 
 import Link from "next/link";
 import { useState, useEffect } from "react";
-import { logIn } from "@/lib/auth-actions";
+import { useRouter } from "next/navigation";
+import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 
-export default function LoginPage() {
+export default function ResetPasswordPage() {
   const [mounted, setMounted] = useState(false);
-  const [error, setError] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [loading, setLoading] = useState(false);
+  const [message, setMessage] = useState("");
+  const [messageType, setMessageType] = useState<"success" | "error" | null>(null);
+  const router = useRouter();
+  const supabase = createClientComponentClient();
 
-  useEffect(() => { setMounted(true); }, []);
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
-  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    setError("");
     setLoading(true);
-    const formData = new FormData(e.currentTarget);
-    const result = await logIn(formData);
-    if (result?.error) {
-      setError(result.error);
+    setMessage("");
+    setMessageType(null);
+
+    if (password !== confirmPassword) {
+      setMessage("Passwords do not match!");
+      setMessageType("error");
+      setLoading(false);
+      return;
+    }
+
+    if (password.length < 6) {
+      setMessage("Password must be at least 6 characters long!");
+      setMessageType("error");
+      setLoading(false);
+      return;
+    }
+
+    try {
+      const { error } = await supabase.auth.updateUser({ password });
+
+      if (error) {
+        throw error;
+      }
+
+      setMessage("Password updated successfully! Redirecting to login...");
+      setMessageType("success");
+      
+      setTimeout(() => {
+        router.push("/login");
+      }, 2000);
+    } catch (error) {
+      setMessage(error instanceof Error ? error.message : "Failed to update password.");
+      setMessageType("error");
+    } finally {
       setLoading(false);
     }
   }
@@ -51,34 +88,38 @@ export default function LoginPage() {
 
           <div className="anim-form-header">
             <h1 className="text-3xl font-semibold tracking-tight text-neutral-900 mb-2" style={{ fontFamily: "'DM Sans', sans-serif" }}>
-              Log in
+              Set new password
             </h1>
             <p className="text-neutral-500 mb-8" style={{ fontFamily: "'DM Sans', sans-serif" }}>
-              Enter your credentials to access your dashboard
+              Enter your new password below.
             </p>
           </div>
 
-          {error && (
-            <div className="mb-5 rounded-xl border border-red-100 bg-red-50 px-4 py-3 text-sm text-red-700" style={{ fontFamily: "'DM Sans', sans-serif" }}>
-              {error}
+          {message && (
+            <div className={`mb-6 rounded-xl border p-4 text-sm ${
+              messageType === "success" 
+                ? "border-green-200 bg-green-50 text-green-700" 
+                : "border-red-200 bg-red-50 text-red-700"
+            }`} style={{ fontFamily: "'DM Sans', sans-serif" }}>
+              {message}
             </div>
           )}
 
           <form onSubmit={handleSubmit} className="space-y-5">
             <div className="anim-form-field">
-              <label htmlFor="email" className="block text-sm font-medium text-neutral-700 mb-2" style={{ fontFamily: "'DM Sans', sans-serif" }}>
-                Email
+              <label htmlFor="password" className="block text-sm font-medium text-neutral-700 mb-2" style={{ fontFamily: "'DM Sans', sans-serif" }}>
+                New password
               </label>
-              <input id="email" name="email" type="email"
+              <input id="password" name="password" type="password" value={password} onChange={(e) => setPassword(e.target.value)}
                 className="w-full px-4 py-3 rounded-xl border border-neutral-200 bg-white text-neutral-900 transition-all focus:outline-none focus:ring-1 focus:ring-neutral-300 focus:border-neutral-300 md:text-md text-sm"
-                placeholder="you@example.com" required />
+                placeholder="••••••••" required />
             </div>
 
             <div className="anim-form-field">
-              <label htmlFor="password" className="block text-sm font-medium text-neutral-700 mb-2" style={{ fontFamily: "'DM Sans', sans-serif" }}>
-                Password
+              <label htmlFor="confirmPassword" className="block text-sm font-medium text-neutral-700 mb-2" style={{ fontFamily: "'DM Sans', sans-serif" }}>
+                Confirm new password
               </label>
-              <input id="password" name="password" type="password"
+              <input id="confirmPassword" name="confirmPassword" type="password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)}
                 className="w-full px-4 py-3 rounded-xl border border-neutral-200 bg-white text-neutral-900 transition-all focus:outline-none focus:ring-1 focus:ring-neutral-300 focus:border-neutral-300 md:text-md text-sm"
                 placeholder="••••••••" required />
             </div>
@@ -86,18 +127,13 @@ export default function LoginPage() {
             <button type="submit" disabled={loading}
               className="anim-form-button w-full py-3.5 rounded-full bg-neutral-900 text-white font-semibold transition-all hover:bg-neutral-800 active:scale-[0.98] disabled:opacity-60 disabled:cursor-not-allowed"
               style={{ fontFamily: "'DM Sans', sans-serif" }}>
-              {loading ? "Logging in…" : "Log in"}
+              {loading ? "Updating password…" : "Reset password"}
             </button>
           </form>
 
-          <p className="anim-form-link mt-4 text-center text-neutral-500" style={{ fontFamily: "'DM Sans', sans-serif" }}>
-            Forgot your password?{" "}
-            <Link href="/forgot-password" className="font-semibold text-neutral-900 hover:underline">Reset password</Link>
-          </p>
-          
-          <p className="mt-4 text-center text-neutral-500" style={{ fontFamily: "'DM Sans', sans-serif" }}>
-            Don't have an account?{" "}
-            <Link href="/signup" className="font-semibold text-neutral-900 hover:underline">Sign up</Link>
+          <p className="anim-form-link mt-8 text-center text-neutral-500" style={{ fontFamily: "'DM Sans', sans-serif" }}>
+            Don't need to reset?{" "}
+            <Link href="/login" className="font-semibold text-neutral-900 hover:underline">Log in</Link>
           </p>
         </div>
       </div>

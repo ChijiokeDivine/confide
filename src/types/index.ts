@@ -41,6 +41,7 @@ export interface Form {
   is_active: boolean;
   whitelist_enabled: boolean;
   whitelist_identifier_label: string;
+  closing_date: string | null; // ISO 8601 datetime string
 }
 
 export interface SurveyResponse {

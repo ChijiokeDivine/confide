@@ -16,6 +16,7 @@ type CreateFormRequest = {
   title: string;
   description?: string;
   questions: Question[];
+  closingDate?: string | null;
   whitelist?: WhitelistPayload;
 };
 
@@ -79,6 +80,7 @@ export async function POST(request: Request) {
         is_active: true,
         whitelist_enabled: whitelistEnabled,
         whitelist_identifier_label: whitelistLabel,
+        closing_date: body.closingDate || null,
       })
       .select()
       .single() as { data: Form | null; error: any };
@@ -142,7 +144,7 @@ export async function GET() {
     const admin = supabaseAdmin();
     const { data: forms, error } = await (admin as any)
       .from("forms")
-      .select("id, title, description, is_active, created_at, questions, creator_id, whitelist_enabled")
+      .select("id, title, description, is_active, created_at, questions, creator_id, whitelist_enabled, closing_date")
       .eq("creator_id", user.id)
       .order("created_at", { ascending: false }) as { data: Form[] | null; error: any };
 

@@ -31,9 +31,9 @@ export async function GET(request: Request) {
 
     const { data: form, error: formError } = await (admin as any)
       .from("forms")
-      .select("id, creator_id, creator_address, aggregator_vault_uuid, questions")
+      .select("id, creator_id, creator_address, aggregator_vault_uuid, questions, title, description")
       .eq("id", formId)
-      .single() as { data: Form | null; error: any };
+      .single() as { data: Form & { title: string; description?: string | null } | null; error: any };
 
     if (formError || !form) {
       return NextResponse.json({ error: "Form not found" }, { status: 404 });
@@ -100,6 +100,8 @@ export async function GET(request: Request) {
       answers: aggregatedAnswers,
       rawResponses: decryptedResponses,
       questions: form.questions,
+      formTitle: form.title,
+      formDescription: form.description,
     });
   } catch (error) {
     const message = error instanceof Error ? error.message : "An unknown error occurred";

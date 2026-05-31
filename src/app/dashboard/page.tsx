@@ -314,7 +314,7 @@ export default function DashboardPage() {
         </div>
 
         {/* Privacy callout */}
-        <div className="anim-in d4 mt-10 md:mt-12 rounded-2xl border border-neutral-100 bg-neutral-50 px-4 md:px-6 py-4 md:py-5 flex items-start gap-3 md:gap-4">
+        <div className="anim-in d4 mt-10 md:mt-[8rem] rounded-2xl border border-neutral-100 bg-neutral-50 px-4 md:px-6 py-4 md:py-5 flex items-start gap-3 md:gap-4 z-0">
           <div className="mt-0.5 flex-shrink-0 w-8 h-8 rounded-full bg-neutral-900 flex items-center justify-center">
             <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M7 1L1.5 3.5v4C1.5 10.5 4 12.5 7 13c3-0.5 5.5-2.5 5.5-5.5v-4L7 1z" stroke="white" strokeWidth="1.2" strokeLinejoin="round"/></svg>
           </div>

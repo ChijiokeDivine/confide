@@ -2,23 +2,41 @@
 
 import Link from "next/link";
 import { useState, useEffect } from "react";
-import { logIn } from "@/lib/auth-actions";
+import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 
-export default function LoginPage() {
+export default function ForgotPasswordPage() {
   const [mounted, setMounted] = useState(false);
-  const [error, setError] = useState("");
+  const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
+  const [message, setMessage] = useState("");
+  const [messageType, setMessageType] = useState<"success" | "error" | null>(null);
+  const supabase = createClientComponentClient();
 
-  useEffect(() => { setMounted(true); }, []);
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
-  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    setError("");
     setLoading(true);
-    const formData = new FormData(e.currentTarget);
-    const result = await logIn(formData);
-    if (result?.error) {
-      setError(result.error);
+    setMessage("");
+    setMessageType(null);
+
+    try {
+      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: `${window.location.origin}/reset-password`,
+      });
+
+      if (error) {
+        throw error;
+      }
+
+      setMessage("Password reset link sent! Check your email.");
+      setMessageType("success");
+    } catch (error) {
+      setMessage(error instanceof Error ? error.message : "Failed to send reset link.");
+      setMessageType("error");
+    } finally {
       setLoading(false);
     }
   }
@@ -31,7 +49,6 @@ export default function LoginPage() {
         .ready .anim-logo { animation: slideDown 0.7s cubic-bezier(0.22,1,0.36,1) 0.1s forwards; }
         .ready .anim-form-header { animation: revealUp 0.8s cubic-bezier(0.22,1,0.36,1) 0.1s forwards; }
         .ready .anim-form-field:nth-child(1) { animation: revealUp 0.7s cubic-bezier(0.22,1,0.36,1) 0.3s forwards; }
-        .ready .anim-form-field:nth-child(2) { animation: revealUp 0.7s cubic-bezier(0.22,1,0.36,1) 0.45s forwards; }
         .ready .anim-form-button { animation: springUp 0.65s cubic-bezier(0.34,1.45,0.64,1) 0.6s forwards; }
         .ready .anim-form-link { animation: scaleFade 0.7s cubic-bezier(0.22,1,0.36,1) 0.75s forwards; }
         @keyframes slideDown { from { opacity:0; transform:translateY(-12px); } to { opacity:1; transform:translateY(0); } }
@@ -51,53 +68,43 @@ export default function LoginPage() {
 
           <div className="anim-form-header">
             <h1 className="text-3xl font-semibold tracking-tight text-neutral-900 mb-2" style={{ fontFamily: "'DM Sans', sans-serif" }}>
-              Log in
+              Reset your password
             </h1>
             <p className="text-neutral-500 mb-8" style={{ fontFamily: "'DM Sans', sans-serif" }}>
-              Enter your credentials to access your dashboard
+              Enter your email address and we'll send you a link to reset your password.
             </p>
           </div>
 
-          {error && (
-            <div className="mb-5 rounded-xl border border-red-100 bg-red-50 px-4 py-3 text-sm text-red-700" style={{ fontFamily: "'DM Sans', sans-serif" }}>
-              {error}
+          {message && (
+            <div className={`mb-6 rounded-xl border p-4 text-sm ${
+              messageType === "success" 
+                ? "border-green-200 bg-green-50 text-green-700" 
+                : "border-red-200 bg-red-50 text-red-700"
+            }`} style={{ fontFamily: "'DM Sans', sans-serif" }}>
+              {message}
             </div>
           )}
 
           <form onSubmit={handleSubmit} className="space-y-5">
             <div className="anim-form-field">
               <label htmlFor="email" className="block text-sm font-medium text-neutral-700 mb-2" style={{ fontFamily: "'DM Sans', sans-serif" }}>
-                Email
+                Email address
               </label>
-              <input id="email" name="email" type="email"
+              <input id="email" name="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)}
                 className="w-full px-4 py-3 rounded-xl border border-neutral-200 bg-white text-neutral-900 transition-all focus:outline-none focus:ring-1 focus:ring-neutral-300 focus:border-neutral-300 md:text-md text-sm"
                 placeholder="you@example.com" required />
-            </div>
-
-            <div className="anim-form-field">
-              <label htmlFor="password" className="block text-sm font-medium text-neutral-700 mb-2" style={{ fontFamily: "'DM Sans', sans-serif" }}>
-                Password
-              </label>
-              <input id="password" name="password" type="password"
-                className="w-full px-4 py-3 rounded-xl border border-neutral-200 bg-white text-neutral-900 transition-all focus:outline-none focus:ring-1 focus:ring-neutral-300 focus:border-neutral-300 md:text-md text-sm"
-                placeholder="••••••••" required />
             </div>
 
             <button type="submit" disabled={loading}
               className="anim-form-button w-full py-3.5 rounded-full bg-neutral-900 text-white font-semibold transition-all hover:bg-neutral-800 active:scale-[0.98] disabled:opacity-60 disabled:cursor-not-allowed"
               style={{ fontFamily: "'DM Sans', sans-serif" }}>
-              {loading ? "Logging in…" : "Log in"}
+              {loading ? "Sending link…" : "Send reset link"}
             </button>
           </form>
 
-          <p className="anim-form-link mt-4 text-center text-neutral-500" style={{ fontFamily: "'DM Sans', sans-serif" }}>
-            Forgot your password?{" "}
-            <Link href="/forgot-password" className="font-semibold text-neutral-900 hover:underline">Reset password</Link>
-          </p>
-          
-          <p className="mt-4 text-center text-neutral-500" style={{ fontFamily: "'DM Sans', sans-serif" }}>
-            Don't have an account?{" "}
-            <Link href="/signup" className="font-semibold text-neutral-900 hover:underline">Sign up</Link>
+          <p className="anim-form-link mt-8 text-center text-neutral-500" style={{ fontFamily: "'DM Sans', sans-serif" }}>
+            Remember your password?{" "}
+            <Link href="/login" className="font-semibold text-neutral-900 hover:underline">Log in</Link>
           </p>
         </div>
       </div>

@@ -16,7 +16,7 @@ export async function GET(
     const { data: form, error } = await admin
       .from("forms")
       .select(
-        "id, title, description, questions, is_active, creator_id, whitelist_enabled, whitelist_identifier_label"
+        "id, title, description, questions, is_active, creator_id, whitelist_enabled, whitelist_identifier_label, closing_date"
       )
       .eq("id", formId)
       .single();
