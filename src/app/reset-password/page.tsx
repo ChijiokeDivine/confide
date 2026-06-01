@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
+import { supabaseBrowser } from "@/lib/supabase-client";
 
 export default function ResetPasswordPage() {
   const [mounted, setMounted] = useState(false);
@@ -13,7 +13,7 @@ export default function ResetPasswordPage() {
   const [message, setMessage] = useState("");
   const [messageType, setMessageType] = useState<"success" | "error" | null>(null);
   const router = useRouter();
-  const supabase = createClientComponentClient();
+  const supabase = supabaseBrowser();
 
   useEffect(() => {
     setMounted(true);

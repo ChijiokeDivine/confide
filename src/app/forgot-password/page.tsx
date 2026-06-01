@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useState, useEffect } from "react";
-import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
+import { supabaseBrowser } from "@/lib/supabase-client";
 
 export default function ForgotPasswordPage() {
   const [mounted, setMounted] = useState(false);
@@ -10,7 +10,7 @@ export default function ForgotPasswordPage() {
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
   const [messageType, setMessageType] = useState<"success" | "error" | null>(null);
-  const supabase = createClientComponentClient();
+  const supabase = supabaseBrowser();
 
   useEffect(() => {
     setMounted(true);
