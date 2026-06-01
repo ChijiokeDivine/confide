@@ -80,13 +80,13 @@ export default function LoginPage() {
             <h1 className="text-3xl font-semibold tracking-tight text-neutral-900 mb-2" style={{ fontFamily: "'DM Sans', sans-serif" }}>
               Log in
             </h1>
-            <p className="text-neutral-500 mb-8" style={{ fontFamily: "'DM Sans', sans-serif" }}>
+            <p className="text-neutral-500 mb-8 text-sm md:text-base" style={{ fontFamily: "'DM Sans', sans-serif" }}>
               Enter your credentials to access your dashboard
             </p>
           </div>
 
           {error && (
-            <div className="mb-5 rounded-xl border border-red-100 bg-red-50 px-4 py-3 text-sm text-red-700" style={{ fontFamily: "'DM Sans', sans-serif" }}>
+            <div className="mb-5 rounded-lg border border-red-100 bg-red-50 px-4 py-3 text-sm text-red-700" style={{ fontFamily: "'DM Sans', sans-serif" }}>
               {error}
             </div>
           )}
@@ -97,8 +97,8 @@ export default function LoginPage() {
                 Email
               </label>
               <input id="email" name="email" type="email"
-                className="w-full px-4 py-3 rounded-xl border border-neutral-200 bg-white text-neutral-900 transition-all focus:outline-none focus:ring-1 focus:ring-neutral-300 focus:border-neutral-300 md:text-md text-sm"
-                placeholder="you@example.com" required />
+                className="w-full px-4 py-2 rounded-lg border border-neutral-200 bg-white text-neutral-900 transition-all focus:outline-none focus:ring-1 focus:ring-neutral-300 focus:border-neutral-300 md:text-md text-sm"
+                placeholder="" required />
             </div>
 
             <div className="anim-form-field">
@@ -106,8 +106,8 @@ export default function LoginPage() {
                 Password
               </label>
               <input id="password" name="password" type="password"
-                className="w-full px-4 py-3 rounded-xl border border-neutral-200 bg-white text-neutral-900 transition-all focus:outline-none focus:ring-1 focus:ring-neutral-300 focus:border-neutral-300 md:text-md text-sm"
-                placeholder="••••••••" required />
+                className="w-full px-4 py-2 rounded-lg border border-neutral-200 bg-white text-neutral-900 transition-all focus:outline-none focus:ring-1 focus:ring-neutral-300 focus:border-neutral-300 md:text-md text-sm"
+                placeholder="" required />
             </div>
 
             <button type="submit" disabled={loading}
@@ -122,7 +122,7 @@ export default function LoginPage() {
               <div className="w-full border-t border-neutral-200" />
             </div>
             <div className="relative flex justify-center text-sm">
-              <span className="px-4 bg-white text-neutral-500" style={{ fontFamily: "'DM Sans', sans-serif" }}>
+              <span className="px-4 bg-white text-neutral-500 text-xs" style={{ fontFamily: "'DM Sans', sans-serif" }}>
                 Or continue with
               </span>
             </div>
@@ -149,12 +149,12 @@ export default function LoginPage() {
             )}
           </button>
 
-          <p className="anim-form-link mt-4 text-center text-neutral-500" style={{ fontFamily: "'DM Sans', sans-serif" }}>
+          <p className="anim-form-link mt-4 text-center text-neutral-500 text-sm" style={{ fontFamily: "'DM Sans', sans-serif" }}>
             Forgot your password?{" "}
             <Link href="/forgot-password" className="font-semibold text-neutral-900 hover:underline">Reset password</Link>
           </p>
           
-          <p className="mt-4 text-center text-neutral-500" style={{ fontFamily: "'DM Sans', sans-serif" }}>
+          <p className="mt-4 text-center text-neutral-500 text-sm" style={{ fontFamily: "'DM Sans', sans-serif" }}>
             Don't have an account?{" "}
             <Link href="/signup" className="font-semibold text-neutral-900 hover:underline">Sign up</Link>
           </p>

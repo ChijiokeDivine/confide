@@ -96,7 +96,7 @@ export default function SignupPage() {
             <h1 className="text-3xl font-semibold tracking-tight text-neutral-900 mb-2" style={{ fontFamily: "'DM Sans', sans-serif" }}>
               Create account
             </h1>
-            <p className="text-neutral-500 mb-8" style={{ fontFamily: "'DM Sans', sans-serif" }}>
+            <p className="text-neutral-500 mb-8 text-sm md:text-base" style={{ fontFamily: "'DM Sans', sans-serif" }}>
               Sign up to start building private surveys
             </p>
           </div>
@@ -111,22 +111,22 @@ export default function SignupPage() {
             <div className="anim-form-field">
               <label htmlFor="name" className="block text-sm font-medium text-neutral-700 mb-2" style={{ fontFamily: "'DM Sans', sans-serif" }}>Name</label>
               <input id="name" name="name" type="text"
-                className="w-full px-4 py-3 rounded-xl border border-neutral-200 transition-all focus:outline-none focus:ring-1 focus:ring-neutral-300 md:text-md text-sm"
-                placeholder="John Doe" required />
+                className="w-full px-4 py-2 rounded-lg border border-neutral-200 transition-all focus:outline-none focus:ring-1 focus:ring-neutral-300 md:text-md text-sm"
+                placeholder="" required />
             </div>
 
             <div className="anim-form-field">
               <label htmlFor="email" className="block text-sm font-medium text-neutral-700 mb-2" style={{ fontFamily: "'DM Sans', sans-serif" }}>Email</label>
               <input id="email" name="email" type="email"
-                className="w-full px-4 py-3 rounded-xl border border-neutral-200 transition-all focus:outline-none focus:ring-1 focus:ring-neutral-300 md:text-md text-sm"
-                placeholder="you@example.com" required />
+                className="w-full px-4 py-2 rounded-lg border border-neutral-200 transition-all focus:outline-none focus:ring-1 focus:ring-neutral-300 md:text-md text-sm"
+                placeholder="" required />
             </div>
 
             <div className="anim-form-field">
               <label htmlFor="password" className="block text-sm font-medium text-neutral-700 mb-2" style={{ fontFamily: "'DM Sans', sans-serif" }}>Password</label>
               <input id="password" name="password" type="password" minLength={8}
-                className="w-full px-4 py-3 rounded-xl border border-neutral-200 transition-all focus:outline-none focus:ring-1 focus:ring-neutral-300 md:text-md text-sm"
-                placeholder="••••••••" required />
+                className="w-full px-4 py-2 rounded-lg border border-neutral-200 transition-all focus:outline-none focus:ring-1 focus:ring-neutral-300 md:text-md text-sm"
+                placeholder="" required />
             </div>
 
             <button type="submit" disabled={loading}
@@ -141,7 +141,7 @@ export default function SignupPage() {
               <div className="w-full border-t border-neutral-200" />
             </div>
             <div className="relative flex justify-center text-sm">
-              <span className="px-4 bg-white text-neutral-500" style={{ fontFamily: "'DM Sans', sans-serif" }}>
+              <span className="px-4 bg-white text-neutral-500 text-xs" style={{ fontFamily: "'DM Sans', sans-serif" }}>
                 Or continue with
               </span>
             </div>
@@ -168,7 +168,7 @@ export default function SignupPage() {
             )}
           </button>
 
-          <p className="anim-form-link mt-8 text-center text-neutral-500" style={{ fontFamily: "'DM Sans', sans-serif" }}>
+          <p className="anim-form-link mt-8 text-center text-neutral-500 text-sm" style={{ fontFamily: "'DM Sans', sans-serif" }}>
             Already have an account?{" "}
             <Link href="/login" className="font-semibold text-neutral-900 hover:underline">Log in</Link>
           </p>
