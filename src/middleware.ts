@@ -4,6 +4,7 @@ import { NextResponse, type NextRequest } from "next/server";
 
 const PROTECTED = ["/dashboard", "/forms/new"];
 const AUTH_PAGES = ["/login", "/signup"];
+const PUBLIC_PAGES = ["/auth/callback"];
 
 export async function middleware(request: NextRequest) {
   let response = NextResponse.next({ request });
@@ -34,6 +35,12 @@ export async function middleware(request: NextRequest) {
   } = await supabase.auth.getSession();
 
   const { pathname } = request.nextUrl;
+
+  // Skip middleware for public callback page
+  const isPublicPage = PUBLIC_PAGES.some((p) => pathname.startsWith(p));
+  if (isPublicPage) {
+    return response;
+  }
 
   // Redirect unauthenticated users away from protected routes
   const isProtected = PROTECTED.some((p) => pathname.startsWith(p));

@@ -25,7 +25,8 @@ const nextConfig = {
     return config;
   },
 
-  turbopack: {}, // 🔥 THIS FIXES YOUR ERROR
+  turbopack: {},
+  allowedDevOrigins: ['127.0.0.1', 'localhost'],
 };
 
 export default nextConfig;

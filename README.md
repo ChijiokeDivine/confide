@@ -49,11 +49,20 @@ First, all the basics you’d expect from a modern survey tool:
 
 | Feature | How it works | Concern I addressed | Solution |
 |---------|--------------|---------------------|----------|
-| User authentication | Email/password login via Supabase Auth | People don’t want to remember another password, and account security matters | Use battle-tested Supabase Auth with secure session handling; later can add OAuth (Google, GitHub) if needed |
-| Form builder | Drag-and-drop? No (yet)—a clean, type-safe form UI for creators to build surveys with 8 question types | Building a good form UX is hard; also need to validate questions to avoid broken surveys | Keep it simple but powerful: text, textarea, email, radio, checkbox, scale, rating, slider, dropdown, phone, date, time, datetime. Validate on server that forms have at least one question. |
+| User authentication | Email/password login plus Google sign-in via Supabase Auth | People don’t want to remember another password, and account security matters | Use Supabase Auth for secure session handling, password reset, Google OAuth, SSR cookie-based callback handling, and conditional "set password" flow for Google-only accounts |
+| Form builder | A clean, type-safe survey builder with templates, many question types, and an AI form generator | Building a good form UX is hard; also need to validate questions to avoid broken surveys | Keep it simple but powerful: text, textarea, email, radio, checkbox, scale, rating, slider, dropdown, phone, date, time, datetime. Also let creators generate a professional first draft from a prompt using Groq, then edit every question manually before publishing. |
 | Survey sharing | Copy a public link and send it to anyone | Need to make sure public links are unguessable but shareable | Use UUIDs for form IDs (long, random, impossible to brute-force) |
 | Dashboard | Creator sees all their forms, response counts, active/closed toggle | Need to make sure only the right person can see the dashboard | Row Level Security (RLS) on Supabase: every query for forms/responses is scoped to the authenticated user |
 | Results dashboard | Charts, individual response view, summary stats | Results need to feel snappy, even when you have lots of responses | Split API into `countOnly` (cheap, no crypto) and full decrypt (pays gas per response); let you check count first before decrypting everything |
+
+#### AI Form Builder
+**What it is**: A creator can describe the survey they want in plain English and get back a complete first draft with a title, description, and structured questions.
+
+**Concern 1**: AI-generated forms can be vague, low quality, or inconsistent.
+**Solution**: Constrain generation to a strict JSON schema, limit question types, normalize generated question IDs server-side, and tune prompts for professional, compliance-ready use cases like HR, legal, medical, and governance.
+
+**Concern 2**: AI should speed up creation, not take away control.
+**Solution**: AI only pre-populates the builder. The creator can still edit, reorder, add, or delete every question before publishing.
 
 ---
 
@@ -122,8 +131,8 @@ Here’s the full flow, end-to-end:
 6. Respondent sees "Thank you!"
 
 ### For a Creator:
-1. Log in via email
-2. Build a form (add questions, optionally enable whitelist)
+1. Log in via email/password or Google
+2. Build a form from scratch, start from a template, or generate one with AI from a prompt
 3. Hit "Create survey"
 4. Server:
    - Authenticates via Supabase
@@ -170,6 +179,10 @@ Create `.env.local` at the root:
 NEXT_PUBLIC_SUPABASE_URL=https://[your-project].supabase.co
 NEXT_PUBLIC_SUPABASE_ANON_KEY=[your-anon-key]
 SUPABASE_SERVICE_ROLE_KEY=[your-service-role-key]
+NEXT_PUBLIC_APP_URL=http://localhost:3000
+
+# AI form generation
+GROQ_API_KEY=[your-groq-api-key]
 
 # CDR / Story Protocol
 # Fund this wallet with testnet IP tokens (https://faucet.story.foundation)
@@ -186,7 +199,16 @@ Run `supabase_schema.sql` in your Supabase SQL Editor to set up tables:
 - `responses`: CDR vault UUIDs per submission
 - `whitelist_entries`: Hashed access list entries
 
-### 3. Install & Run
+### 3. Auth Providers
+In Supabase Auth, enable:
+- Email/password authentication
+- Google OAuth
+
+For Google OAuth, set your redirect URL to:
+- `http://localhost:3000/auth/callback` for local development
+- Your production app URL with `/auth/callback` appended in production
+
+### 4. Install & Run
 ```bash
 npm install
 npm run dev
@@ -202,10 +224,13 @@ npm run dev
 | `src/lib/auth-actions.ts` | Login/signup/logout server actions |
 | `src/lib/wallet.ts` | Wallet generation + AES-256-GCM encryption for wallet storage |
 | `src/lib/cdr.ts` / `src/lib/cdr-server.ts` | CDR client wrappers |
+| `src/app/auth/callback/route.ts` | Server-side Google OAuth callback handler that exchanges the auth code and creates a profile if needed |
 | `src/app/api/forms/route.ts` | Create new forms + list creator’s forms |
+| `src/app/api/generate-form/route.ts` | AI form generation endpoint powered by Groq |
 | `src/app/api/respond/route.ts` | Submit responses (encrypt via CDR) |
 | `src/app/api/results/route.ts` | Decrypt + aggregate responses (creator only) |
 | `src/app/forms/new/page.tsx` | Form builder UI |
+| `src/components/AIFormGenerator.tsx` | Prompt-based AI form generation modal used inside the builder |
 | `src/app/forms/[formId]/page.tsx` | Public survey page |
 | `src/app/forms/[formId]/results/page.tsx` | Results dashboard |
 | `src/app/dashboard/page.tsx` | Creator homepage |
@@ -221,4 +246,3 @@ npm run dev
 - Question branching (conditional logic)
 - Rate limiting to prevent spam
 - More templates (already have a few!)
-

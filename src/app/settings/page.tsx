@@ -10,6 +10,7 @@ export default function SettingsPage() {
   const [name, setName] = useState("");
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const [currentAvatarPath, setCurrentAvatarPath] = useState<string | null>(null);
+  const [hasPasswordAuth, setHasPasswordAuth] = useState<boolean | null>(null);
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -28,6 +29,13 @@ export default function SettingsPage() {
       const sb = supabaseBrowser();
       const { data: { user } } = await sb.auth.getUser();
       if (!user || !user.email) return;
+
+      const provider = typeof user.app_metadata?.provider === "string" ? user.app_metadata.provider : null;
+      const providers = Array.isArray(user.app_metadata?.providers)
+        ? user.app_metadata.providers.filter((value): value is string => typeof value === "string")
+        : [];
+      const hasEmailProvider = provider === "email" || providers.includes("email");
+      setHasPasswordAuth(hasEmailProvider);
 
       const { data: account } = await sb
         .from("creator_accounts")
@@ -164,8 +172,13 @@ export default function SettingsPage() {
     setError("");
     setSuccess("");
 
-    if (!currentPassword.trim() || !newPassword.trim()) {
-      setError("All password fields are required");
+    if (hasPasswordAuth === null) {
+      setError("Still loading your account settings. Please try again.");
+      return;
+    }
+
+    if (!newPassword.trim() || !confirmPassword.trim() || (hasPasswordAuth && !currentPassword.trim())) {
+      setError(hasPasswordAuth ? "All password fields are required" : "Enter and confirm your new password");
       return;
     }
 
@@ -183,13 +196,31 @@ export default function SettingsPage() {
 
     try {
       const sb = supabaseBrowser();
+      const { data: { user } } = await sb.auth.getUser();
+      if (!user || !user.email) throw new Error("Not authenticated");
+
+      if (hasPasswordAuth) {
+        const { error: signInError } = await sb.auth.signInWithPassword({
+          email: user.email,
+          password: currentPassword,
+        });
+
+        if (signInError) {
+          throw new Error("Current password is incorrect");
+        }
+      }
+
       const { error: updateError } = await sb.auth.updateUser({
         password: newPassword,
       });
 
       if (updateError) throw updateError;
 
-      setSuccess("Password changed successfully!");
+      setSuccess(
+        hasPasswordAuth
+          ? "Password changed successfully!"
+          : "Password set successfully! You can now log in with email and password."
+      );
       setCurrentPassword("");
       setNewPassword("");
       setConfirmPassword("");
@@ -317,16 +348,23 @@ export default function SettingsPage() {
         {/* Change Password Section */}
         <div className="anim-in d4 mb-8 rounded-2xl border border-neutral-100 bg-white p-6 md:p-8">
           <h2 className="text-lg font-semibold text-neutral-900 mb-6" style={{ fontFamily: "'DM Sans', sans-serif" }}>
-            Change Password
+            {hasPasswordAuth ? "Change Password" : "Set Password"}
           </h2>
+          {hasPasswordAuth === false && (
+            <p className="mb-6 text-sm text-neutral-500" style={{ fontFamily: "'DM Sans', sans-serif" }}>
+              You signed in with Google. Set a password if you also want to log in with email and password.
+            </p>
+          )}
           <form onSubmit={changePassword} className="space-y-4">
-            <div>
-              <label className="block text-xs font-medium text-neutral-500 mb-1.5 uppercase tracking-[0.12em]" style={{ fontFamily: "'DM Sans', sans-serif" }}>Current Password</label>
-              <input type="password" value={currentPassword} onChange={(e) => setCurrentPassword(e.target.value)}
-                className="w-full px-4 py-3 rounded-xl border border-neutral-200 text-neutral-900 transition-all focus:ring-1 focus:ring-neutral-300 focus:border-neutral-300"
-                placeholder="Enter current password"
-                style={{ fontFamily: "'DM Sans', sans-serif" }} />
-            </div>
+            {hasPasswordAuth && (
+              <div>
+                <label className="block text-xs font-medium text-neutral-500 mb-1.5 uppercase tracking-[0.12em]" style={{ fontFamily: "'DM Sans', sans-serif" }}>Current Password</label>
+                <input type="password" value={currentPassword} onChange={(e) => setCurrentPassword(e.target.value)}
+                  className="w-full px-4 py-3 rounded-xl border border-neutral-200 text-neutral-900 transition-all focus:ring-1 focus:ring-neutral-300 focus:border-neutral-300"
+                  placeholder="Enter current password"
+                  style={{ fontFamily: "'DM Sans', sans-serif" }} />
+              </div>
+            )}
             <div>
               <label className="block text-xs font-medium text-neutral-500 mb-1.5 uppercase tracking-[0.12em]" style={{ fontFamily: "'DM Sans', sans-serif" }}>New Password</label>
               <input type="password" value={newPassword} onChange={(e) => setNewPassword(e.target.value)}
@@ -344,7 +382,7 @@ export default function SettingsPage() {
             <button type="submit" disabled={loading}
               className="flex items-center justify-center gap-2 px-4 py-2 rounded-full bg-neutral-900 text-white text-sm font-semibold hover:bg-neutral-800 active:scale-[0.98] transition-all disabled:opacity-60 disabled:cursor-not-allowed"
               style={{ fontFamily: "'DM Sans', sans-serif" }}>
-              Change Password
+              {hasPasswordAuth ? "Change Password" : "Set Password"}
             </button>
           </form>
         </div>
