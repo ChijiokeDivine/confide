@@ -25,7 +25,7 @@ export default function NovuHomePage() {
           className="absolute inset-0 bg-cover bg-top bg-no-repeat"
           style={{
             backgroundImage:
-              "url('/Smiling.png')",
+              "url('/Smiling.webp')",
           }}
         />
         <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black/60" />
