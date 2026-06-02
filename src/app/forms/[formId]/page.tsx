@@ -206,10 +206,18 @@ export default function PublicFormPage() {
   // ── Loading / error / closed shells ────────────────────────────────────────
   if (!mounted || loading) {
     return (
-      <div className="min-h-screen bg-white flex items-center justify-center">
-        <div className="text-neutral-400" style={{ fontFamily: "'DM Sans', sans-serif" }}>
-          Loading…
-        </div>
+      <div className="anim-in min-h-screen flex flex-col items-center justify-center text-center">
+        <img
+          src="/wired-flat-966-privacy-policy-hover-swipe.gif"
+          alt="Preparing form"
+          className="mb-6 w-48 h-48 object-contain"
+        />
+        <p
+          className="text-neutral-900 text-xl"
+          style={{ fontFamily: "'DM Sans', sans-serif" }}
+        >
+          Loading form...
+        </p>
       </div>
     );
   }
