@@ -111,7 +111,7 @@ export default function WorkspacePage() {
             className="flex items-center rounded-full bg-neutral-900 px-4 md:px-5 py-2 text-sm font-medium text-white hover:bg-neutral-800 transition-colors active:scale-[0.98]"
             style={{ fontFamily: "'DM Sans', sans-serif" }}>
             <svg className="mr-2" width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M7 1v12M1 7h12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/></svg>
-            New survey
+            New form
           </Link>
         </div>
 

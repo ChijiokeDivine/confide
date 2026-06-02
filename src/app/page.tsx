@@ -22,38 +22,38 @@ export default function NovuHomePage() {
   const slides = [
     {
       id: 0,
-      image: "https://images.unsplash.com/photo-1573496799652-408c2ac9fe98?w=800&q=80",
-      company: "Beam",
+      image: "/hr.webp",
+      company: "HR Teams",
       stats: [
-        { value: "480+ hrs", label: "Saved monthly\non IT admin" },
-        { value: "100%", label: "compliant offboarding + IT\nasset retrieval" },
+        { value: "Anonymous", label: "Workplace feedback\nemployees actually mean" },
+        { value: "Zero leaks", label: "Responses encrypted\nbefore storage" },
       ],
     },
     {
       id: 1,
-      image: "https://images.unsplash.com/photo-1600880292203-757bb62b4baf?w=800&q=80",
-      company: "Acme Corp",
+      image: "/researchers.webp",
+      company: "Researchers",
       stats: [
-        { value: "3x faster", label: "Global hiring\nspeed" },
-        { value: "99.9%", label: "Payroll accuracy\nworldwide" },
+        { value: "No bias", label: "Sensitive questions\nanswered honestly" },
+        { value: "Private", label: "Data no one else\ncan ever read" },
       ],
     },
     {
       id: 2,
-      image: "https://images.unsplash.com/photo-1551836022-d5d88e9218df?w=800&q=80",
-      company: "NovaTech",
+      image: "/productteams.webp",
+      company: "Product Teams",
       stats: [
-        { value: "60+", label: "Countries\nsupported" },
-        { value: "40%", label: "Reduction in\nHR overhead" },
+        { value: "Real feedback", label: "What users think\nnot what sounds safe" },
+        { value: "Trustworthy", label: "Privacy that builds\nuser confidence" },
       ],
     },
     {
       id: 3,
-      image: "https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=800&q=80",
-      company: "Stride",
+      image: "/daos.webp",
+      company: "DAOs",
       stats: [
-        { value: "$2M+", label: "Saved in\ncompliance costs" },
-        { value: "10x", label: "Faster employee\nonboarding" },
+        { value: "On-chain", label: "Governance votes\nand member feedback" },
+        { value: "Encrypted", label: "Community responses\nno one can tamper with" },
       ],
     },
   ];
@@ -238,9 +238,8 @@ export default function NovuHomePage() {
                 Forms people actually answer  <span className="text-[#9b7fe8]">honestly.</span>
               </h1>
 
-              <p className="mt-6 text-white/60 text-base sm:text-lg leading-relaxed max-w-md" style={{ fontFamily: "'DM Sans', Georgia, serif" }}>
-                Confide encrypts every response the moment it's submitted. Only you can read them - no one else, ever. 
-                
+              <p className="mt-6 text-white/60 text-sm md:text-lg leading-relaxed max-w-md" style={{ fontFamily: "'DM Sans', Georgia, serif" }}>
+                Every survey tool stores answers in plain text - so respondents hold back. With Confide, responses are encrypted before storage. Not even we can read them.
               </p>
             </div>
 
@@ -275,11 +274,7 @@ export default function NovuHomePage() {
 
             {/* Company Badge */}
             <div className="absolute top-6 left-6 rounded-full px-4 py-2 flex items-center gap-2 border border-white/30 bg-white/50 p-1 backdrop-blur-md">
-              <div className="w-7 h-7 bg-black rounded-md flex items-center justify-center">
-                <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-                  <path d="M2 4l5 2 5-2M2 4v6l5 2 5-2V4" stroke="white" strokeWidth="1.2" strokeLinejoin="round" />
-                </svg>
-              </div>
+              
               <span className="font-semibold text-gray-900 text-sm">
                 {slides[activeSlide].company}
               </span>
@@ -289,8 +284,8 @@ export default function NovuHomePage() {
             <div className="absolute bottom-14 left-6 right-6 flex gap-6 z-10">
               {slides[activeSlide].stats.map((stat, i) => (
                 <div key={i} className="flex-1">
-                  <p className="text-white text-2xl sm:text-3xl font-extrabold">{stat.value}</p>
-                  <p className="text-white/80 text-xs sm:text-sm mt-1 leading-snug whitespace-pre-line">
+                  <p className="text-white text-xl md:text-3xl font-bold" style={{ fontFamily: "'DM Sans', Georgia, serif" }}>{stat.value}</p>
+                  <p className="text-white/80 text-xs sm:text-sm mt-1 leading-snug whitespace-pre-line" style={{ fontFamily: "'DM Sans', Georgia, serif" }}>
                     {stat.label}
                   </p>
                 </div>
@@ -342,50 +337,17 @@ export default function NovuHomePage() {
                 Build a form in minutes. AI helps if you want it to.
               </p>
 
-              <div className="mt-16 flex justify-center">
-                <div className="w-full max-w-sm rounded-[24px] bg-white p-6 shadow-sm">
-                  <div className="space-y-6">
-                    <div className="flex items-center justify-between">
-                      <span className="text-md text-neutral-700">
-                        Name of person(s) involved
-                      </span>
-                      
-                    </div>
-
-                    <div className="flex items-center justify-between">
-                      
-                      <input
-                        type="text"
-                        value="Tony Stark, John Cena"
-                        disabled
-                        className="w-full bg-transparent border-b border-neutral-200 text-neutral-900  text-sm md:text-sm focus:outline-none"
+                 <div className="mt-12 rounded-[24px] bg-white  shadow-sm">
+                  <div className=" gap-6">
+                    <div className="flex items-center justify-center w-full">
+                      <img
+                        src="/screenshot_1.5x_postspark_2026-06-02_11-28-49.webp"
+                        alt="Form screenshot"
+                        className="w-full max-w-md rounded-xl shadow-sm"
                       />
                     </div>
-
-                    <div className="flex items-center justify-between">
-                      <span className="text-sm text-neutral-700" style={{ fontFamily: "'DM Sans', Georgia, serif" }}>Secured by</span>
-
-                      <div className="flex -space-x-2">
-                        {[
-                          "https://build.usecdr.dev/story-logo.svg?dpl=dpl_GTNm3euJpNM9dhuf4UqwMdYXhXwv",
-
-                        ].map((img, i) => (
-                          <img
-                            key={i}
-                            src={img}
-                            alt=""
-                            className="w-20 scale-[0.7] border-2 border-white object-cover"
-                          />
-                        ))}
-                      </div>
-                    </div>
-
-                    <button className="w-full rounded-xl bg-neutral-900 md:py-3 py-2 md:text-md text-sm font-medium text-white transition hover:opacity-90">
-                      Create
-                    </button>
                   </div>
                 </div>
-              </div>
             </div>
 
             {/* Card 2 */}
@@ -400,29 +362,25 @@ export default function NovuHomePage() {
 
               <div className="mt-16 space-y-4">
                 {/* Top Widget */}
-                <div className="relative rounded-2xl p-5 shadow-sm overflow-hidden">
+                <div className="relative rounded-2xl p-5 h-[100px] shadow-sm overflow-hidden">
 
-                  {/* Gradient background */}
-                  <div className="absolute inset-0 bg-gradient-to-br from-[#C0A9B0]  to-[#BCC4DB]" />
-
-                  {/* Grain overlay */}
-                  <div
-                    className="absolute inset-0 opacity-10 mix-blend-overlay pointer-events-none"
-                    style={{
-                      backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)' opacity='0.4'/%3E%3C/svg%3E")`,
-                    }}
+                  {/* Gradient overlay image */}
+                  <img
+                    src="/grad.webp"
+                    alt=""
+                    className="absolute inset-0 w-full h-full object-cover"
                   />
 
                   {/* Content */}
-                  <div className="relative flex items-center gap-3">
+                  <div className="relative flex items-center justify-center gap-3 h-full">
                     <input
                       type="text"
                       value="confide.xyz/forms/099f24e5-dad8-4c00-8c0a-51378295d7fa"
                       disabled
-                      className="flex-1 bg-white/80 backdrop-blur border border-white/30 rounded-lg px-4 py-2 text-xs text-neutral-800 truncate"
+                      className="flex-1 max-w-md bg-white/80 backdrop-blur border border-white/30 rounded-lg px-4 py-2 text-xs text-neutral-800 truncate" style={{ fontFamily: "'DM Sans', Georgia, serif" }}
                     />
 
-                    <button className="px-4 py-2 bg-black/80 text-white text-xs font-medium rounded-lg hover:bg-black transition-colors">
+                    <button className="px-4 py-2 bg-black/80 text-white text-xs font-medium rounded-lg hover:bg-black transition-colors" style={{ fontFamily: "'DM Sans', Georgia, serif" }}>
                       Copy <span className="hidden md:inline-block">link</span>
                     </button>
                   </div>
@@ -439,49 +397,17 @@ export default function NovuHomePage() {
                 Read
               </h3>
 
-              <p className="mt-3 text-sm md:text-md text-neutral-600">
+              <p className="mt-3 text-sm md:text-md text-neutral-600" style={{ fontFamily: "'DM Sans', Georgia, serif" }}>
                 Only you can decrypt and view the results.
               </p>
 
-              <div className="mt-12 rounded-[24px] bg-white p-6 shadow-sm">
-                <div className="grid grid-cols-[1fr_auto] gap-6">
-                  <div className="space-y-8">
-                    {[
-                      { title: "Submit", date: "Jun 16th" },
-                      { title: "Encrypt", date: "Jun 16th" },
-                      { title: "Decrypt", date: "Jun 16th" },
-                    ].map((item, index) => (
-                      <div key={index} className="relative flex gap-4">
-                        <div className="relative">
-                          <div className="h-4 w-4 rounded-full bg-neutral-200" />
-
-                          {index !== 2 && (
-                            <div className="absolute left-1/2 top-8 h-10 w-[2px] -translate-x-1/2 bg-neutral-200" />
-                          )}
-                        </div>
-
-                        <div>
-                          <h4 className="text-md font-medium text-neutral-900">
-                            {item.title}
-                          </h4>
-
-                          <p className="text-neutral-500 text-xs">{item.date}</p>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-
-                  <div className="flex flex-col items-center justify-between">
+              <div className="mt-12 rounded-[24px] bg-white shadow-sm">
+                <div className=" gap-6">
+                  <div className="flex items-center justify-center w-full">
                     <img
-                      src="https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=200&q=80"
-                      alt=""
-                      className="h-12 w-12 rounded-full object-cover"
-                    />
-
-                    <img
-                      src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=400&q=80"
-                      alt=""
-                      className="h-12 w-12 rounded-full object-cover"
+                      src="/screenshot_1.5x_postspark_2026-06-02_10-59-59.webp"
+                      alt="Form screenshot"
+                      className="w-full max-w-md rounded-xl shadow-sm"
                     />
                   </div>
                 </div>
@@ -490,25 +416,37 @@ export default function NovuHomePage() {
           </div>
         </div>
       </section>
-      <section className="w-full min-h-[85vh] bg-white flex items-center justify-center px-4 py-8 lg:px-6 lg:py-6 font-sans">
-        <div className="w-full h-full lg:h-[85vh] lg:max-h-[85vh] grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-5 lg:py-6">
-        
-          {/* Left Panel */}
-          <div className="bg-[#1a1040] rounded-3xl p-8 sm:p-10 lg:p-14 flex flex-col justify-between min-h-[480px]">
+      <section className="w-full bg-white flex items-center justify-center px-4 py-8 lg:px-6 lg:py-6 lg:py-24 font-sans">
+        <div className="w-full">
+     
+          <div className="bg-[#1b1b1b] rounded-3xl p-8 sm:p-10 lg:p-14 flex flex-col items-center w-full">
 
             {/* Top Badge */}
            
 
             {/* Headline */}
-            <div className="flex-1 flex flex-col justify-center mt-8">
-              <h1 className="text-white text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-extrabold leading-[1.05] tracking-tight" style={{ fontFamily: "'DM Sans', Georgia, serif" }}>
-                Forms people actually answer  <span className="text-[#9b7fe8]">honestly.</span>
+            <div className="flex flex-col items-center justify-center mt-8 text-center">
+              <h1 className="text-white text-3xl md:text-4xl lg:text-5xl xl:text-7xl font-extrabold leading-[1.05] tracking-tight hidden md:block" style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>
+               When no one's watching, people <br className="hidden md:block"/><span className="text-[#d8ebff]">tell the truth. </span>
+              </h1>
+              <h1 className="text-white text-4xl md:text-5xl lg:text-5xl xl:text-7xl font-extrabold leading-[1.05] tracking-tight  md:hidden" style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>
+              Honesty needs  <br className="hidden md:block"/><span className="text-[#d8ebff]">privacy. </span>
               </h1>
 
-              <p className="mt-6 text-white/60 text-base sm:text-lg leading-relaxed max-w-md">
+              <p className="mt-6 text-white/60 text-sm sm:text-lg leading-relaxed max-w-md">
+
                 Confide encrypts every response the moment it's submitted. Only you can read them - no one else, ever. 
                 
               </p>
+            </div>
+
+            {/* Screenshot */}
+            <div className="mt-8 w-full max-w-5xl">
+              <img
+                src="/screenshot_1.5x_postspark_2026-06-02_13-18-31.webp"
+                alt="Form screenshot"
+                className="w-full rounded-xl shadow-sm"
+              />
             </div>
 
             {/* CTA */}
@@ -520,11 +458,67 @@ export default function NovuHomePage() {
             </div>
           </div>
 
-          
-
         </div>
       </section>
 
+      {/* Footer */}
+      <footer className="w-full bg-neutral-900 text-white py-12 px-4">
+        <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-8">
+          {/* Left - Brand */}
+          <div className="text-center md:text-left">
+            <Link
+              href="/"
+              className="text-2xl font-light tracking-tight"
+              style={{ fontFamily: "'DM Sans', sans-serif", letterSpacing: "-0.02em" }}
+            >
+              Confide
+            </Link>
+            <p className="mt-2 text-neutral-400 text-sm" style={{ fontFamily: "'DM Sans', sans-serif" }}>
+              Private forms for everyone.
+            </p>
+          </div>
+
+          {/* Right - Links */}
+          <div className="flex flex-wrap items-center justify-center gap-8">
+            <Link
+              href="/#features"
+              className="text-neutral-300 hover:text-white text-sm transition-colors"
+              style={{ fontFamily: "'DM Sans', sans-serif" }}
+            >
+              Features
+            </Link>
+            <Link
+              href="/#faq"
+              className="text-neutral-300 hover:text-white text-sm transition-colors"
+              style={{ fontFamily: "'DM Sans', sans-serif" }}
+            >
+              FAQ
+            </Link>
+            <Link
+              href="/signup"
+              className="text-white text-sm font-medium hover:text-neutral-300 transition-colors"
+              style={{ fontFamily: "'DM Sans', sans-serif" }}
+            >
+              Get Started
+            </Link>
+          </div>
+        </div>
+
+        {/* Bottom Bar */}
+        <div className="max-w-7xl mx-auto mt-12 pt-8 border-t border-neutral-800 flex flex-col md:flex-row items-center justify-between gap-4">
+          <p className="text-neutral-500 text-xs" style={{ fontFamily: "'DM Sans', sans-serif" }}>
+            © {new Date().getFullYear()} Confide. All rights reserved.
+          </p>
+          <div className="flex gap-6">
+            <a href="#" className="text-neutral-500 hover:text-white text-xs transition-colors" style={{ fontFamily: "'DM Sans', sans-serif" }}>
+              Privacy
+            </a>
+            <a href="#" className="text-neutral-500 hover:text-white text-xs transition-colors" style={{ fontFamily: "'DM Sans', sans-serif" }}>
+              Terms
+            </a>
+          </div>
+        </div>
+      </footer>
 
     </main>
   );

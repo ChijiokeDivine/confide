@@ -218,7 +218,7 @@ export default function DashboardPage() {
                         {form.is_active ? "Active" : "Closed"}
                       </span>
                     </div>
-                    <p className="text-sm text-neutral-400" style={{ fontFamily: "'DM Sans', sans-serif" }}>
+                    <p className="text-xs md:text-sm text-neutral-400" style={{ fontFamily: "'DM Sans', sans-serif" }}>
                       {form.questions.length} question{form.questions.length !== 1 ? "s" : ""} · {form.response_count} response{form.response_count !== 1 ? "s" : ""}
                     </p>
                   </div>
@@ -319,8 +319,8 @@ export default function DashboardPage() {
             <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M7 1L1.5 3.5v4C1.5 10.5 4 12.5 7 13c3-0.5 5.5-2.5 5.5-5.5v-4L7 1z" stroke="white" strokeWidth="1.2" strokeLinejoin="round"/></svg>
           </div>
           <div>
-            <p className="text-sm font-medium text-neutral-900 mb-0.5" style={{ fontFamily: "'DM Sans', sans-serif" }}>End-to-end encrypted</p>
-            <p className="md:text-sm text-xs text-neutral-500" style={{ fontFamily: "'DM Sans', sans-serif" }}>
+            <p className="text-xs md:text-sm font-medium text-neutral-900 mb-0.5" style={{ fontFamily: "'DM Sans', sans-serif" }}>End-to-end encrypted</p>
+            <p className="md:text-sm text-[8px] text-neutral-500" style={{ fontFamily: "'DM Sans', sans-serif" }}>
               Every response is encrypted via CDR before leaving the respondent's browser. Only your wallet can decrypt the results.
             </p>
           </div>

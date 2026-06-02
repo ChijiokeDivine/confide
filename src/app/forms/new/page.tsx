@@ -330,7 +330,7 @@ function NewFormInner() {
                       value={title}
                       onChange={(e) => setTitle(e.target.value)}
                       className={`w-full font-semibold px-4 py-3 rounded-xl border border-neutral-200 bg-white text-neutral-900 transition-all focus:ring-1 focus:ring-neutral-300 focus:border-neutral-300 text-sm md:text-md ${isAIGenerating ? "ai-shimmer-input" : ""}`}
-                      placeholder="Employee satisfaction Q3 2026"
+                      placeholder=""
                       style={{ fontFamily: "'DM Sans', sans-serif" }}
                     />
                   </div>
@@ -341,7 +341,7 @@ function NewFormInner() {
                       onChange={(e) => setDescription(e.target.value)}
                       rows={3}
                       className={`w-full px-4 py-3 rounded-xl border border-neutral-200 bg-white text-neutral-900 transition-all focus:ring-1 focus:ring-neutral-300 resize-none text-sm md:text-md ${isAIGenerating ? "ai-shimmer-input" : ""}`}
-                      placeholder="Brief description shown to respondents"
+                      placeholder=""
                       style={{ fontFamily: "'DM Sans', sans-serif" }}
                     />
                   </div>
@@ -354,7 +354,7 @@ function NewFormInner() {
                       className={`w-full px-4 py-3 rounded-xl border border-neutral-200 bg-white text-neutral-900 transition-all focus:ring-1 focus:ring-neutral-300 text-sm md:text-md ${isAIGenerating ? "ai-shimmer-input" : ""}`}
                       style={{ fontFamily: "'DM Sans', sans-serif" }}
                     />
-                    <p className="text-xs text-neutral-400 mt-1" style={{ fontFamily: "'DM Sans', sans-serif" }}>
+                    <p className="text-xs text-neutral-400 mt-1 hidden md:block" style={{ fontFamily: "'DM Sans', sans-serif" }}>
                       The survey will automatically stop accepting responses after this date and time.
                     </p>
                   </div>

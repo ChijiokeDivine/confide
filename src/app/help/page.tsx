@@ -9,7 +9,7 @@ export default function HelpPage() {
       items: [
         {
           question: "How do I create a new survey?",
-          answer: "1. Click \"New survey\" in the top right of your workspace or dashboard.\n2. Choose a pre-built template from categories like \"General\", \"Web3 & DAOs\", or select \"Start from scratch\".\n3. Add a descriptive title and optional introduction text for respondents.\n4. Add your questions: select a question type (single choice, multiple choice, open text), enter the question prompt, and add options if applicable.\n5. (Optional) Set a closing date to stop accepting responses automatically.\n6. Click \"Publish\" to make your survey live.",
+          answer: "1. Click \"New form\" in the top right of your workspace or dashboard.\n2. Choose a pre-built template from categories like \"General\", \"Web3 & DAOs\", or select \"Start from scratch\".\n3. Add a descriptive title and optional introduction text for respondents.\n4. Add your questions: select a question type (single choice, multiple choice, open text), enter the question prompt, and add options if applicable.\n5. (Optional) Set a closing date to stop accepting responses automatically.\n6. Click \"Publish\" to make your survey live.",
         },
         {
           question: "What question types are supported?",
