@@ -25,8 +25,7 @@ export default function NovuHomePage() {
       image: "/hr.webp",
       company: "HR Teams",
       stats: [
-        { value: "Anonymous", label: "Workplace feedback\nemployees actually mean" },
-        { value: "Zero leaks", label: "Responses encrypted\nbefore storage" },
+        { value: "Anonymous", label: "Employees speak freely\nwhen no one's watching" },
       ],
     },
     {
@@ -34,8 +33,7 @@ export default function NovuHomePage() {
       image: "/researchers.webp",
       company: "Researchers",
       stats: [
-        { value: "No bias", label: "Sensitive questions\nanswered honestly" },
-        { value: "Private", label: "Data no one else\ncan ever read" },
+        { value: "No bias", label: "Ask sensitive questions\nwithout influencing answers" },
       ],
     },
     {
@@ -43,8 +41,7 @@ export default function NovuHomePage() {
       image: "/productteams.webp",
       company: "Product Teams",
       stats: [
-        { value: "Real feedback", label: "What users think\nnot what sounds safe" },
-        { value: "Trustworthy", label: "Privacy that builds\nuser confidence" },
+        { value: "Real feedback", label: "Hear what users mean\nnot what sounds polite" },
       ],
     },
     {
@@ -52,8 +49,7 @@ export default function NovuHomePage() {
       image: "/daos.webp",
       company: "DAOs",
       stats: [
-        { value: "On-chain", label: "Governance votes\nand member feedback" },
-        { value: "Encrypted", label: "Community responses\nno one can tamper with" },
+        { value: "On-chain", label: "Private votes and feedback\nverified on-chain" },
       ],
     },
   ];
@@ -223,11 +219,11 @@ export default function NovuHomePage() {
 
         </div>
       </section>
-      <section className="w-full min-h-[85vh] bg-white flex items-center justify-center px-4 py-8 lg:px-6 lg:py-6 font-sans">
+      <section className="w-full min-h-[85vh] bg-white flex items-center justify-center px-4 py-8 lg:px-6 lg:py-6 font-sans hidden lg:block">
         <div className="w-full h-full lg:h-[85vh] lg:max-h-[85vh] grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-5 lg:py-6">
 
           {/* Left Panel */}
-          <div className="bg-[#1a1040] rounded-3xl p-8 sm:p-10 lg:p-14 flex flex-col justify-between min-h-[480px]">
+          <div className="bg-[#2d1b69] rounded-3xl p-8 sm:p-10 lg:p-14 flex flex-col justify-between min-h-[480px]">
 
             {/* Top Badge */}
            
@@ -276,7 +272,8 @@ export default function NovuHomePage() {
             <div className="absolute top-6 left-6 rounded-full px-4 py-2 flex items-center gap-2 border border-white/30 bg-white/50 p-1 backdrop-blur-md">
               
               <span className="font-semibold text-gray-900 text-sm">
-                {slides[activeSlide].company}
+                Who It's For
+
               </span>
             </div>
 
@@ -284,8 +281,8 @@ export default function NovuHomePage() {
             <div className="absolute bottom-14 left-6 right-6 flex gap-6 z-10">
               {slides[activeSlide].stats.map((stat, i) => (
                 <div key={i} className="flex-1">
-                  <p className="text-white text-xl md:text-3xl font-bold" style={{ fontFamily: "'DM Sans', Georgia, serif" }}>{stat.value}</p>
-                  <p className="text-white/80 text-xs sm:text-sm mt-1 leading-snug whitespace-pre-line" style={{ fontFamily: "'DM Sans', Georgia, serif" }}>
+                  <p className="text-white text-xl md:text-5xl font-bold" style={{ fontFamily: "'DM Sans', Georgia, serif" }}>{slides[activeSlide].company}</p>
+                  <p className="text-white/80 md:text-lg text-base mt-5 leading-snug whitespace-pre-line" style={{ fontFamily: "'DM Sans', Georgia, serif" }}>
                     {stat.label}
                   </p>
                 </div>
@@ -313,7 +310,7 @@ export default function NovuHomePage() {
         </div>
       </section>
       <section className="bg-[#f5f5f3] py-20 lg:py-28">
-        <div className="mx-auto max-w-7xl px-6 lg:px-8">
+        <div className="mx-auto max-w-7xl px-6 lg:px-8 max-[410px]:px-5">
           {/* Heading */}
           <div className="mb-14">
             <p className="mb-4 text-sm md:text-md font-medium  text-neutral-500" style={{ fontFamily: "'DM Sans', Georgia, serif" }}>
@@ -328,7 +325,7 @@ export default function NovuHomePage() {
           {/* Cards */}
           <div className="grid gap-6 lg:grid-cols-3">
             {/* Card 1 */}
-            <div className="rounded-[32px] bg-[#ece9e9] p-8">
+            <div className="rounded-[25px] md:rounded-[32px] bg-[#ece9e9] p-6 sm:p-8">
               <h3 className="text-2xl font-semibold text-neutral-900" style={{ fontFamily: "'DM Sans', Georgia, serif" }}>
                 Create
               </h3>
@@ -351,7 +348,7 @@ export default function NovuHomePage() {
             </div>
 
             {/* Card 2 */}
-            <div className="rounded-[32px] bg-[#ece9e9] p-8">
+            <div className="rounded-[25px] md:rounded-[32px] bg-[#ece9e9] p-6 sm:p-8">
               <h3 className="text-2xl font-semibold text-neutral-900" style={{ fontFamily: "'DM Sans', Georgia, serif" }}>
                 Share
               </h3>
@@ -392,7 +389,7 @@ export default function NovuHomePage() {
             </div>
 
             {/* Card 3 */}
-            <div className="rounded-[32px] bg-[#ece9e9] p-8">
+            <div className="rounded-[25px] md:rounded-[32px] bg-[#ece9e9] p-6 sm:p-8">
               <h3 className="text-2xl font-semibold text-neutral-900" style={{ fontFamily: "'DM Sans', Georgia, serif" }}>
                 Read
               </h3>
