@@ -302,18 +302,11 @@ export default function PublicFormPage() {
           {form && (
             <div className="anim-in mb-8">
               <p
-                className="text-xs uppercase tracking-[0.18em] text-neutral-400 mb-3 flex items-center gap-2"
+                className="text-xs uppercase  text-neutral-400 mb-10 flex items-center gap-2"
                 style={{ fontFamily: "'DM Sans', sans-serif" }}
               >
-                <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
-                  <path
-                    d="M6 1L1 3v3.5C1 8.5 3.2 10 6 10.5c2.8-.5 5-2 5-4V3L6 1z"
-                    stroke="currentColor"
-                    strokeWidth="1.2"
-                    strokeLinejoin="round"
-                  />
-                </svg>
-                Encrypted — only the creator can read your answers
+               
+                Encrypted - only the creator can read your answers
               </p>
               <h1
                 className="text-2xl md:text-3xl font-semibold text-neutral-900 mb-2"
@@ -432,35 +425,7 @@ export default function PublicFormPage() {
 
                   {/* Privacy notice */}
                   <div className="rounded-xl border border-neutral-100 bg-white px-4 py-4 space-y-2">
-                    <div className="flex items-center gap-2 mb-1">
-                      <svg
-                        width="13"
-                        height="13"
-                        viewBox="0 0 13 13"
-                        fill="none"
-                        className="text-neutral-500 flex-shrink-0"
-                      >
-                        <path
-                          d="M6.5 1L1.5 3.5v4C1.5 10 3.75 11.5 6.5 12c2.75-.5 5-2 5-4.5v-4L6.5 1z"
-                          stroke="currentColor"
-                          strokeWidth="1.2"
-                          strokeLinejoin="round"
-                        />
-                        <path
-                          d="M4.5 6.5l1.5 1.5 2.5-2.5"
-                          stroke="currentColor"
-                          strokeWidth="1.2"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                        />
-                      </svg>
-                      <span
-                        className="text-xs font-semibold text-neutral-700 uppercase tracking-wide"
-                        style={{ fontFamily: "'DM Sans', sans-serif" }}
-                      >
-                        Privacy-preserving by design
-                      </span>
-                    </div>
+                    
                     <p
                       className="text-xs text-neutral-500 leading-relaxed"
                       style={{ fontFamily: "'DM Sans', sans-serif" }}

@@ -320,7 +320,7 @@ function NewFormInner() {
                   <h2 className="text-xl md:text-2xl font-semibold text-neutral-900" style={{ fontFamily: "'DM Sans', sans-serif" }}>
                     Let's start with the basics
                   </h2>
-                  <p className="text-neutral-500" style={{ fontFamily: "'DM Sans', sans-serif" }}>
+                  <p className="text-neutral-500 hidden md:block" style={{ fontFamily: "'DM Sans', sans-serif" }}>
                     Give your survey a title and a short description for your respondents.
                   </p>
                   <div>
@@ -329,8 +329,8 @@ function NewFormInner() {
                       type="text"
                       value={title}
                       onChange={(e) => setTitle(e.target.value)}
-                      className={`w-full font-semibold px-4 py-3 rounded-xl border border-neutral-200 bg-white text-neutral-900 transition-all focus:ring-1 focus:ring-neutral-300 focus:border-neutral-300 text-sm md:text-lg ${isAIGenerating ? "ai-shimmer-input" : ""}`}
-                      placeholder="e.g., Employee satisfaction Q3 2025"
+                      className={`w-full font-semibold px-4 py-3 rounded-xl border border-neutral-200 bg-white text-neutral-900 transition-all focus:ring-1 focus:ring-neutral-300 focus:border-neutral-300 text-sm md:text-md ${isAIGenerating ? "ai-shimmer-input" : ""}`}
+                      placeholder="Employee satisfaction Q3 2026"
                       style={{ fontFamily: "'DM Sans', sans-serif" }}
                     />
                   </div>
