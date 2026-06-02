@@ -400,32 +400,33 @@ export default function NovuHomePage() {
 
               <div className="mt-16 space-y-4">
                 {/* Top Widget */}
-                <div className="rounded-2xl bg-white p-5 shadow-sm">
-                  <div className="mb-4 flex items-center justify-between">
-                    <span className="text-sm font-medium text-neutral-700">
-                      Increase user retention rate
-                    </span>
+                <div className="relative rounded-2xl p-5 shadow-sm overflow-hidden">
 
+                  {/* Gradient background */}
+                  <div className="absolute inset-0 bg-gradient-to-br from-[#C0A9B0]  to-[#BCC4DB]" />
+
+                  {/* Grain overlay */}
+                  <div
+                    className="absolute inset-0 opacity-10 mix-blend-overlay pointer-events-none"
+                    style={{
+                      backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)' opacity='0.4'/%3E%3C/svg%3E")`,
+                    }}
+                  />
+
+                  {/* Content */}
+                  <div className="relative flex items-center gap-3">
+                    <input
+                      type="text"
+                      value="confide.xyz/forms/099f24e5-dad8-4c00-8c0a-51378295d7fa"
+                      disabled
+                      className="flex-1 bg-white/80 backdrop-blur border border-white/30 rounded-lg px-4 py-2 text-xs text-neutral-800 truncate"
+                    />
+
+                    <button className="px-4 py-2 bg-black/80 text-white text-xs font-medium rounded-lg hover:bg-black transition-colors">
+                      Copy <span className="hidden md:inline-block">link</span>
+                    </button>
                   </div>
 
-                  <div className="mb-4 flex items-center gap-2">
-                    {[1, 2, 3].map((i) => (
-                      <img
-                        key={i}
-                        src={`https://i.pravatar.cc/100?img=${i + 10}`}
-                        alt=""
-                        className="h-8 w-8 rounded-full object-cover"
-                      />
-                    ))}
-
-                    <div className="flex h-8 w-8 items-center justify-center rounded-full bg-yellow-300 text-xs font-semibold">
-                      12+
-                    </div>
-                  </div>
-
-                  <div className="h-2 rounded-full bg-neutral-200">
-                    <div className="h-2 w-3/5 rounded-full bg-blue-500" />
-                  </div>
                 </div>
 
                 
@@ -446,9 +447,9 @@ export default function NovuHomePage() {
                 <div className="grid grid-cols-[1fr_auto] gap-6">
                   <div className="space-y-8">
                     {[
-                      { title: "Ordered", date: "Jun 16th" },
-                      { title: "Shipped", date: "Jun 17th" },
-                      { title: "Delivered", date: "Jun 19th" },
+                      { title: "Submit", date: "Jun 16th" },
+                      { title: "Encrypt", date: "Jun 16th" },
+                      { title: "Decrypt", date: "Jun 16th" },
                     ].map((item, index) => (
                       <div key={index} className="relative flex gap-4">
                         <div className="relative">
