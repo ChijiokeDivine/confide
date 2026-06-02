@@ -241,10 +241,13 @@ export default function NovuHomePage() {
 
             {/* CTA */}
             <div className="mt-10">
-              <button className="group bg-white hover:bg-gray-100 text-[#1a1040] font-bold text-sm md:text-base px-8 py-3 md:py-4 rounded-full transition-all duration-200 flex items-center gap-2 w-fit">
+              <Link
+                href="/signup"
+                className="group bg-white hover:bg-gray-100 text-[#1a1040] font-bold text-sm md:text-base px-8 py-3 md:py-4 rounded-full transition-all duration-200 flex items-center gap-2 w-fit"
+              >
                 Create a form free
                 <span className="group-hover:translate-x-1 transition-transform duration-200 text-lg">›</span>
-              </button>
+              </Link>
             </div>
           </div>
 
@@ -448,10 +451,13 @@ export default function NovuHomePage() {
 
             {/* CTA */}
             <div className="mt-10">
-              <button className="group bg-white hover:bg-gray-100 text-[#1a1040] font-bold text-sm md:text-base px-8 py-3 md:py-4 rounded-full transition-all duration-200 flex items-center gap-2 w-fit">
+              <Link
+                href="/signup"
+                className="group bg-white hover:bg-gray-100 text-[#1a1040] font-bold text-sm md:text-base px-8 py-3 md:py-4 rounded-full transition-all duration-200 flex items-center gap-2 w-fit"
+              >
                 Create a form free
                 <span className="group-hover:translate-x-1 transition-transform duration-200 text-lg">›</span>
-              </button>
+              </Link>
             </div>
           </div>
 
