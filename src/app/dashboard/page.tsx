@@ -321,7 +321,7 @@ export default function DashboardPage() {
           <div>
             <p className="text-xs md:text-sm font-medium text-neutral-900 mb-0.5" style={{ fontFamily: "'DM Sans', sans-serif" }}>End-to-end encrypted</p>
             <p className="md:text-sm text-[8px] text-neutral-500" style={{ fontFamily: "'DM Sans', sans-serif" }}>
-              Every response is encrypted via CDR before leaving the respondent's browser. Only your wallet can decrypt the results.
+              Every response is encrypted via CDR before leaving the respondent's browser. Only your account can decrypt the results.
             </p>
           </div>
         </div>
