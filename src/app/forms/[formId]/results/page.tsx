@@ -31,7 +31,7 @@ type CacheEntry = {
 // ─── Cache helpers (AES-GCM encrypted localStorage) ───────────────────────────
 
 function cacheKey(formId: string): string {
-  return `confide:results:${formId}`;
+  return `Confyde:results:${formId}`;
 }
 
 /** Derive an AES-GCM key from the Supabase access token (never stored). */

@@ -117,7 +117,7 @@ Now the good stuff—this is what makes Confyde different:
 Here’s the full flow, end-to-end:
 
 ### For a Respondent:
-1. Open public survey link: `https://confide.app/forms/[formId]`
+1. Open public survey link: `https://Confyde.app/forms/[formId]`
 2. Fill out the form (no wallet needed!)
 3. Hit "Submit"
 4. Client sends answers to `POST /api/respond`
