@@ -138,7 +138,7 @@ export default function NovuHomePage() {
               className="text-[1.4rem] font-light tracking-tight text-white select-none"
               style={{ fontFamily: "'DM Sans', sans-serif", letterSpacing: "-0.02em" }}
             >
-              Confide
+              Confyde
             </Link>
             <a
               href="/signup"
@@ -155,7 +155,7 @@ export default function NovuHomePage() {
               className="ml-12 text-[1.8rem] font-light tracking-tight text-white select-none"
               style={{ fontFamily: "'DM Sans', sans-serif", letterSpacing: "-0.02em" }}
             >
-              Confide
+              Confyde
             </Link>
             <nav
               className="relative flex items-center rounded-full border border-white/30 bg-white/10 p-1 backdrop-blur-md"
@@ -235,7 +235,7 @@ export default function NovuHomePage() {
               </h1>
 
               <p className="mt-6 text-white/60 text-sm md:text-lg leading-relaxed max-w-md" style={{ fontFamily: "'DM Sans', Georgia, serif" }}>
-                Every survey tool stores answers in plain text - so respondents hold back. With Confide, responses are encrypted before storage. Not even we can read them.
+                Every survey tool stores answers in plain text - so respondents hold back. With Confyde, responses are encrypted before storage. Not even we can read them.
               </p>
             </div>
 
@@ -435,7 +435,7 @@ export default function NovuHomePage() {
 
               <p className="mt-6 text-white/60 text-sm sm:text-lg leading-relaxed max-w-md">
 
-                Confide encrypts every response the moment it's submitted. Only you can read them - no one else, ever. 
+                Confyde encrypts every response the moment it's submitted. Only you can read them - no one else, ever. 
                 
               </p>
             </div>
@@ -474,7 +474,7 @@ export default function NovuHomePage() {
               className="text-2xl font-light tracking-tight"
               style={{ fontFamily: "'DM Sans', sans-serif", letterSpacing: "-0.02em" }}
             >
-              Confide
+              Confyde
             </Link>
             <p className="mt-2 text-neutral-400 text-sm" style={{ fontFamily: "'DM Sans', sans-serif" }}>
               Private forms for everyone.
@@ -510,7 +510,7 @@ export default function NovuHomePage() {
         {/* Bottom Bar */}
         <div className="max-w-7xl mx-auto mt-12 pt-8 border-t border-neutral-800 flex flex-col md:flex-row items-center justify-between gap-4">
           <p className="text-neutral-500 text-xs" style={{ fontFamily: "'DM Sans', sans-serif" }}>
-            © {new Date().getFullYear()} Confide. All rights reserved.
+            © {new Date().getFullYear()} Confyde. All rights reserved.
           </p>
           <div className="flex gap-6">
             <a href="#" className="text-neutral-500 hover:text-white text-xs transition-colors" style={{ fontFamily: "'DM Sans', sans-serif" }}>

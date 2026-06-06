@@ -449,7 +449,7 @@ export default function Sidebar({ children }: { children: React.ReactNode }) {
         <div className="p-6">
           <div className="flex items-center justify-between mb-8">
             <span className="text-xl font-light tracking-tight text-neutral-900" style={{ fontFamily: "'DM Sans', sans-serif" }}>
-              Confide
+              Confyde
             </span>
             <button onClick={() => setDrawerOpen(false)} className="p-2 rounded-lg hover:bg-neutral-100">
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
@@ -483,7 +483,7 @@ export default function Sidebar({ children }: { children: React.ReactNode }) {
           <div className="flex items-center justify-between mb-8">
             {!sidebarCollapsed && (
               <span className="text-xl font-light tracking-tight text-neutral-900" style={{ fontFamily: "'DM Sans', sans-serif" }}>
-                Confide
+                Confyde
               </span>
             )}
             <button onClick={() => setSidebarCollapsed(!sidebarCollapsed)} className="p-2 rounded-lg hover:bg-neutral-100 transition-colors">
@@ -528,7 +528,7 @@ export default function Sidebar({ children }: { children: React.ReactNode }) {
             </svg>
           </button>
           <span className="text-xl font-light tracking-tight text-neutral-900" style={{ fontFamily: "'DM Sans', sans-serif" }}>
-            Confide
+            Confyde
           </span>
           <div className="w-10" />
         </header>

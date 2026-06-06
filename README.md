@@ -1,5 +1,5 @@
 
-# Confide: Privacy-First Survey Tool
+# Confyde: Privacy-First Survey Tool
 
 ---
 
@@ -67,7 +67,7 @@ First, all the basics you’d expect from a modern survey tool:
 ---
 
 ### Web3 Features (The Privacy Magic)
-Now the good stuff—this is what makes Confide different:
+Now the good stuff—this is what makes Confyde different:
 
 #### 1. End-to-End Encrypted Responses via Story Protocol CDR
 **What it is**: Every response gets encrypted *before* it’s stored—using Story Protocol’s Confidential Data Registry (CDR). CDR uses Trusted Execution Environments (TEEs) to handle encryption/decryption securely.
@@ -153,7 +153,7 @@ Here’s the full flow, end-to-end:
 
 ## Who This Is For
 
-Confide is built for:
+Confyde is built for:
 1. **HR teams**: Running anonymous workplace feedback surveys where honesty matters.
 2. **Market researchers**: Asking sensitive questions without worrying about data leaks.
 3. **Product teams**: Collecting user feedback with a privacy guarantee that builds trust.

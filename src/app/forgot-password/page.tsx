@@ -62,7 +62,7 @@ export default function ForgotPasswordPage() {
           <div className="mb-12">
             <Link href="/" className="anim-logo text-[1.6rem] md:text-[1.8rem] font-light tracking-tight text-neutral-900"
               style={{ fontFamily: "'DM Sans', sans-serif", letterSpacing: "-0.02em" }}>
-              Confide
+              Confyde
             </Link>
           </div>
 

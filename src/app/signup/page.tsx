@@ -69,7 +69,7 @@ export default function SignupPage() {
         <div className="relative z-10 flex flex-col justify-between p-12 text-white">
           <Link href="/" className="anim-logo text-[1.8rem] font-light tracking-tight"
             style={{ fontFamily: "'DM Sans', sans-serif", letterSpacing: "-0.02em" }}>
-            Confide
+            Confyde
           </Link>
           <div className="anim-welcome">
             <h2 className="text-4xl font-normal leading-tight mb-4" style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>
@@ -87,7 +87,7 @@ export default function SignupPage() {
         <div className="md:hidden mb-12">
           <Link href="/" className="anim-logo text-[1.6rem] font-light tracking-tight text-neutral-900"
             style={{ fontFamily: "'DM Sans', sans-serif", letterSpacing: "-0.02em" }}>
-            Confide
+            Confyde
           </Link>
         </div>
 

@@ -17,7 +17,7 @@ const dmSans = DM_Sans({
 });
 
 export const metadata: Metadata = {
-  title: "Confide – Collect sensitive feedback without exposing your users.",
+  title: "Confyde – Collect sensitive feedback without exposing your users.",
   description:
     "Collect sensitive feedback without exposing your users. Employee surveys, DAO votes, research forms - encrypted, aggregated only by you.",
 };

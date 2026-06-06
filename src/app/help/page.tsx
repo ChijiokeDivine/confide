@@ -13,7 +13,7 @@ export default function HelpPage() {
         },
         {
           question: "What question types are supported?",
-          answer: "Confide currently supports three question types:\n- Single choice: Respondents select one option from a list (ideal for Yes/No, multiple choice with one answer).\n- Multiple choice: Respondents can select multiple options from a list.\n- Open text: Respondents can type a free-form response (good for longer answers and qualitative feedback).\nMore question types coming soon!",
+          answer: "Confyde currently supports three question types:\n- Single choice: Respondents select one option from a list (ideal for Yes/No, multiple choice with one answer).\n- Multiple choice: Respondents can select multiple options from a list.\n- Open text: Respondents can type a free-form response (good for longer answers and qualitative feedback).\nMore question types coming soon!",
         },
         {
           question: "Can I edit a survey after publishing?",
@@ -50,7 +50,7 @@ export default function HelpPage() {
         },
         {
           question: "Are respondent identities kept private?",
-          answer: "Yes! By default, surveys do not collect any identifying information about respondents unless you specifically add a question asking for it. All responses are encrypted end-to-end, and Confide never stores plaintext responses on our servers.",
+          answer: "Yes! By default, surveys do not collect any identifying information about respondents unless you specifically add a question asking for it. All responses are encrypted end-to-end, and Confyde never stores plaintext responses on our servers.",
         },
       ],
     },
