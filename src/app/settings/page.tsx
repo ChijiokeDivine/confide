@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useState, useEffect, useRef } from "react";
 import { supabaseBrowser } from "@/lib/supabase-client";
-import { logOut } from "@/lib/auth-actions";
+import { logOut, deleteAccountAndAllData } from "@/lib/auth-actions";
 import Sidebar from "@/components/Sidebar";
 
 export default function SettingsPage() {
@@ -18,6 +18,7 @@ export default function SettingsPage() {
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
+  const [showConfirmation, setShowConfirmation] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -232,31 +233,21 @@ export default function SettingsPage() {
   }
 
   async function deleteAccount() {
-    if (!confirm("Are you sure you want to delete your account? This action is irreversible.")) {
-      return;
-    }
+    setShowConfirmation(true);
+  }
 
+  async function handleConfirmDelete() {
     setLoading(true);
     setError("");
     setSuccess("");
 
     try {
-      const sb = supabaseBrowser();
-      const { data: { user } } = await sb.auth.getUser();
-      if (!user || !user.email) throw new Error("Not authenticated");
-
-      const { error: deleteError } = await sb
-        .from("creator_accounts")
-        .delete()
-        .eq("email", user.email);
-
-      if (deleteError) throw deleteError;
-
-      await logOut();
+      await deleteAccountAndAllData();
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to delete account");
     } finally {
       setLoading(false);
+      setShowConfirmation(false);
     }
   }
 
@@ -402,6 +393,39 @@ export default function SettingsPage() {
           </button>
         </div>
       </main>
+
+      {/* Delete Confirmation Modal */}
+      {showConfirmation && (
+        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl p-6 md:p-8 max-w-md w-full shadow-2xl">
+            <h3 className="text-lg font-semibold text-neutral-900 mb-4" style={{ fontFamily: "'DM Sans', sans-serif" }}>
+              Are you absolutely sure?
+            </h3>
+            <p className="text-sm text-neutral-600 mb-6 leading-relaxed" style={{ fontFamily: "'DM Sans', sans-serif" }}>
+              This will permanently delete your account, all your forms, and all responses. This action cannot be undone.
+            </p>
+            <div className="flex items-center gap-3">
+              <button onClick={() => setShowConfirmation(false)} disabled={loading}
+                className="flex-1 px-4 py-2 rounded-full border border-neutral-200 text-sm font-semibold text-neutral-700 hover:bg-neutral-50 transition-all disabled:opacity-60 disabled:cursor-not-allowed"
+                style={{ fontFamily: "'DM Sans', sans-serif" }}>
+                Cancel
+              </button>
+              <button onClick={handleConfirmDelete} disabled={loading}
+                className="flex-1 px-4 py-2 rounded-full bg-red-600 text-sm font-semibold text-white hover:bg-red-700 active:scale-[0.98] transition-all disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                style={{ fontFamily: "'DM Sans', sans-serif" }}>
+                {loading ? (
+                  <>
+                    <div className="w-4 h-4 border-2 border-white/50 border-t-white rounded-full animate-spin" />
+                    Deleting...
+                  </>
+                ) : (
+                  "Yes, Delete"
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </Sidebar>
   );
 }

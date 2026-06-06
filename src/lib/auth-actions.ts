@@ -74,3 +74,43 @@ export async function logOut() {
   await supabase.auth.signOut();
   redirect("/");
 }
+
+// ─── Delete Account ──────────────────────────────────────────────────────────
+export async function deleteAccountAndAllData() {
+  const supabase = await createServerSupabaseClient();
+  const admin = supabaseAdmin();
+
+  // Get current user
+  const { data: { user }, error: userError } = await supabase.auth.getUser();
+  if (userError || !user) throw new Error("Not authenticated");
+
+  // Get creator account
+  const { data: creatorAccount, error: creatorError } = await admin
+    .from("creator_accounts")
+    .select("id")
+    .eq("id", user.id)
+    .single();
+  if (creatorError || !creatorAccount) throw new Error("User not found");
+
+  // Delete all forms (cascades to responses via foreign key)
+  const { error: formsError } = await admin
+    .from("forms")
+    .delete()
+    .eq("creator_id", user.id);
+  if (formsError) throw new Error("Failed to delete forms");
+
+  // Delete creator account
+  const { error: accountError } = await admin
+    .from("creator_accounts")
+    .delete()
+    .eq("id", user.id);
+  if (accountError) throw new Error("Failed to delete account");
+
+  // Delete Supabase auth user
+  const { error: authError } = await admin.auth.admin.deleteUser(user.id);
+  if (authError) throw new Error("Failed to delete auth user");
+
+  // Log out and redirect
+  await supabase.auth.signOut();
+  redirect("/");
+}
