@@ -514,7 +514,7 @@ export default function Sidebar({ children }: { children: React.ReactNode }) {
             <div className="mt-6">
               <button
                 onClick={() => {}}
-                className="w-full px-4 py-2 rounded-xl text-sm font-medium text-white bg-[#ece9e9] transition-all"
+                className="w-full px-4 py-2 rounded-xl text-sm font-medium text-black bg-[#ece9e9] transition-all"
                 style={{ fontFamily: "'DM Sans', sans-serif" }}
               >
                 Upgrade
