@@ -48,7 +48,8 @@ CREATE TABLE public.creator_accounts (
     wallet_address text NOT NULL,
     encrypted_private_key text NOT NULL,
     name text NOT NULL,
-    avatar_url text
+    avatar_url text,
+    pro boolean DEFAULT false NOT NULL
 );
 
 

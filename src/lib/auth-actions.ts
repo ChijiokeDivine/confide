@@ -38,6 +38,7 @@ export async function signUp(formData: FormData) {
     email,
     wallet_address: address,
     encrypted_private_key: encryptedPrivateKey,
+    pro: false,
   });
 
   if (profileError) {

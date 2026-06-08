@@ -59,6 +59,7 @@ export interface CreatorAccount {
   wallet_address: string;
   encrypted_private_key: string;
   avatar_url?: string;
+  pro: boolean;
 }
 
 export interface FormAnswers {

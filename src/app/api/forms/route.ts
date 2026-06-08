@@ -35,12 +35,23 @@ export async function POST(request: Request) {
     const admin = supabaseAdmin();
     const { data: creator, error: creatorError } = await (admin as any)
       .from("creator_accounts")
-      .select("wallet_address")
+      .select("wallet_address, pro")
       .eq("id", user.id)
       .single() as { data: CreatorAccount | null; error: any };
 
     if (creatorError || !creator) {
       return NextResponse.json({ error: "Creator account not found" }, { status: 404 });
+    }
+
+    if (!creator.pro) {
+      const { count: formCount } = await (admin as any)
+        .from("forms")
+        .select("id", { count: "exact", head: true })
+        .eq("creator_id", user.id);
+      
+      if (formCount && formCount >= 3) {
+        return NextResponse.json({ error: "You have reached the maximum number of forms for free users. Please upgrade to create more." }, { status: 403 });
+      }
     }
 
     const body: CreateFormRequest = await request.json();

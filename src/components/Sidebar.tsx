@@ -460,6 +460,15 @@ export default function Sidebar({ children }: { children: React.ReactNode }) {
           <nav className="space-y-2">
             {navItems.map((item) => renderNavItem(item, true))}
           </nav>
+          <div className="mt-6">
+            <button
+              onClick={() => {}}
+              className="w-full px-4 py-3 rounded-xl text-sm font-medium text-white bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 transition-all"
+              style={{ fontFamily: "'DM Sans', sans-serif" }}
+            >
+              Upgrade
+            </button>
+          </div>
         </div>
         <div className="absolute bottom-0 left-0 right-0 p-6 border-t border-neutral-100">
           <button 
@@ -501,6 +510,17 @@ export default function Sidebar({ children }: { children: React.ReactNode }) {
           <nav className="space-y-2">
             {navItems.map((item) => renderNavItem(item))}
           </nav>
+          {!sidebarCollapsed && (
+            <div className="mt-6">
+              <button
+                onClick={() => {}}
+                className="w-full px-4 py-3 rounded-xl text-sm font-medium text-white bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 transition-all"
+                style={{ fontFamily: "'DM Sans', sans-serif" }}
+              >
+                Upgrade
+              </button>
+            </div>
+          )}
         </div>
         <div className="absolute bottom-0 left-0 right-0 p-6 border-t border-neutral-100">
           <button 
