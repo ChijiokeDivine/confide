@@ -463,7 +463,7 @@ export default function Sidebar({ children }: { children: React.ReactNode }) {
           <div className="mt-6">
             <button
               onClick={() => {}}
-              className="w-full px-4 py-3 rounded-xl text-sm font-medium text-white bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 transition-all"
+              className="w-full px-4 py-3 rounded-full text-sm font-medium text-white bg-[#ece9e9] transition-all"
               style={{ fontFamily: "'DM Sans', sans-serif" }}
             >
               Upgrade
