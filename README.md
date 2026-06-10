@@ -1,4 +1,6 @@
-https://pbs.twimg.com/media/HJW-36SXYAMJbAe?format=jpg&name=large
+<img src="https://pbs.twimg.com/media/HJW-36SXYAMJbAe?format=jpg&name=large" width="1000" alt="Image Description">
+
+
 # Confyde: Privacy-First Survey Tool
 
 ---
