@@ -212,7 +212,7 @@ export default function DashboardPage() {
                   
                   <div className="min-w-0 flex-1 mb-3 md:mb-0 relative z-10">
                     <div className="flex items-center gap-2 md:gap-3 mb-1">
-                      <h3 className="font-medium text-neutral-900 truncate" style={{ fontFamily: "'DM Sans', sans-serif" }}>{form.title.length > 30 ? form.title.slice(0, 30) + '...' : form.title}</h3>
+                      <h3 className="font-medium text-[14px] md:text-[16px] text-neutral-900 truncate" style={{ fontFamily: "'DM Sans', sans-serif" }}>{form.title.length > 25 ? form.title.slice(0, 25) + '...' : form.title}</h3>
                       <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-[10px] md:text-xs font-medium ${form.is_active ? "bg-green-50 text-green-700" : "bg-neutral-100 text-neutral-500"}`}
                         style={{ fontFamily: "'DM Sans', sans-serif" }}>
                         {form.is_active ? "Active" : "Closed"}
